@@ -1,0 +1,37 @@
+bin_id,zone,location_type,latitude,longitude,capacity_liters,waste_stream,sensor_provider
+BIN_001,Central Campus,academic,42.27854849074355,-83.74007197139125,180,recycling,synthetic_flux_simulator
+BIN_002,Central Campus,academic,42.27448813666042,-83.74054392311236,360,recycling,synthetic_flux_simulator
+BIN_003,Central Campus,academic,42.27743076333378,-83.73823024208352,360,landfill,synthetic_flux_simulator
+BIN_004,Central Campus,academic,42.279400025483774,-83.7380811447444,180,recycling,synthetic_flux_simulator
+BIN_005,Central Campus,academic,42.27884151681605,-83.7397467264332,120,landfill,synthetic_flux_simulator
+BIN_006,Central Campus,academic,42.279581210542354,-83.73828986663978,240,recycling,synthetic_flux_simulator
+BIN_007,Central Campus,academic,42.276774326820075,-83.73599942559039,180,recycling,synthetic_flux_simulator
+BIN_008,Central Campus,academic,42.27736615960912,-83.73724184346601,360,landfill,synthetic_flux_simulator
+BIN_009,Michigan Stadium,stadium,42.266642918700875,-83.74792452219458,360,compost,synthetic_flux_simulator
+BIN_010,Michigan Stadium,stadium,42.264977963087674,-83.75016479091084,240,landfill,synthetic_flux_simulator
+BIN_011,Michigan Stadium,stadium,42.2679321501269,-83.74890510542377,240,landfill,synthetic_flux_simulator
+BIN_012,Michigan Stadium,stadium,42.26707106701809,-83.74736214249184,180,recycling,synthetic_flux_simulator
+BIN_013,Michigan Stadium,stadium,42.26379184869335,-83.74772232231705,360,recycling,synthetic_flux_simulator
+BIN_014,Michigan Stadium,stadium,42.26611003445645,-83.74830636052589,360,recycling,synthetic_flux_simulator
+BIN_015,Michigan Stadium,stadium,42.2663024719878,-83.74747795558648,360,recycling,synthetic_flux_simulator
+BIN_016,Michigan Stadium,stadium,42.26703631880651,-83.75132288047574,120,recycling,synthetic_flux_simulator
+BIN_017,South/West Quad,residential,42.27415332922227,-83.74214998012684,120,landfill,synthetic_flux_simulator
+BIN_018,South/West Quad,residential,42.27344150399175,-83.73925709896173,120,recycling,synthetic_flux_simulator
+BIN_019,South/West Quad,residential,42.27439720694603,-83.7407070444828,240,recycling,synthetic_flux_simulator
+BIN_020,South/West Quad,residential,42.27642802502336,-83.74162770513004,240,landfill,synthetic_flux_simulator
+BIN_021,South/West Quad,residential,42.276544356586264,-83.74134434778479,360,landfill,synthetic_flux_simulator
+BIN_022,South/West Quad,residential,42.273344985885196,-83.7401051106607,360,landfill,synthetic_flux_simulator
+BIN_023,Dining,dining,42.27724287363733,-83.74026905476342,240,recycling,synthetic_flux_simulator
+BIN_024,Dining,dining,42.27544317622851,-83.7386778045724,360,landfill,synthetic_flux_simulator
+BIN_025,Dining,dining,42.275346503076186,-83.7401871282092,360,landfill,synthetic_flux_simulator
+BIN_026,Dining,dining,42.27515507578764,-83.7394775105863,240,landfill,synthetic_flux_simulator
+BIN_027,Dining,dining,42.276803756116855,-83.73830230680386,120,landfill,synthetic_flux_simulator
+BIN_028,North Campus,academic,42.29185650722037,-83.71903720198112,180,landfill,synthetic_flux_simulator
+BIN_029,North Campus,academic,42.289619140697766,-83.71779504428967,180,recycling,synthetic_flux_simulator
+BIN_030,North Campus,academic,42.29131930740273,-83.71366138906397,360,recycling,synthetic_flux_simulator
+BIN_031,North Campus,academic,42.29332752802324,-83.71768051182401,240,landfill,synthetic_flux_simulator
+BIN_032,North Campus,academic,42.29138974046338,-83.71448744535257,180,landfill,synthetic_flux_simulator
+BIN_033,North Campus,academic,42.29278196255839,-83.7155720759158,240,compost,synthetic_flux_simulator
+BIN_034,Library,library,42.27692983311389,-83.73865308687631,120,landfill,synthetic_flux_simulator
+BIN_035,Library,library,42.27683933386194,-83.73481679799562,120,landfill,synthetic_flux_simulator
+BIN_036,Library,library,42.277122696142925,-83.73730400596885,240,landfill,synthetic_flux_simulator

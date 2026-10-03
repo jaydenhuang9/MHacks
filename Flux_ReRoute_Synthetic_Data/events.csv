@@ -1,0 +1,26 @@
+event_id,event_type,event_name,start_time,end_time,zone,estimated_attendance,is_synthetic
+EVT_001,football,Stadium Event (Synthetic Scenario),2026-04-26T12:00:00,2026-04-26T17:00:00,Michigan Stadium,90082,True
+EVT_002,football,Stadium Event (Synthetic Scenario),2026-05-17T12:00:00,2026-05-17T17:00:00,Michigan Stadium,93906,True
+EVT_003,football,Stadium Event (Synthetic Scenario),2026-06-07T12:00:00,2026-06-07T17:00:00,Michigan Stadium,102836,True
+EVT_004,football,Stadium Event (Synthetic Scenario),2026-07-05T12:00:00,2026-07-05T17:00:00,Michigan Stadium,88902,True
+EVT_005,football,Stadium Event (Synthetic Scenario),2026-07-26T12:00:00,2026-07-26T17:00:00,Michigan Stadium,103297,True
+EVT_006,football,Stadium Event (Synthetic Scenario),2026-08-16T12:00:00,2026-08-16T17:00:00,Michigan Stadium,87791,True
+EVT_007,football,Stadium Event (Synthetic Scenario),2026-09-06T12:00:00,2026-09-06T17:00:00,Michigan Stadium,89729,True
+EVT_008,campus_event,Campus Event (Synthetic Scenario),2026-04-27T14:00:00,2026-04-27T21:00:00,North Campus,2362,True
+EVT_009,campus_event,Campus Event (Synthetic Scenario),2026-07-05T10:00:00,2026-07-05T20:00:00,Central Campus,4183,True
+EVT_010,campus_event,Campus Event (Synthetic Scenario),2026-05-22T17:00:00,2026-05-22T20:00:00,Central Campus,959,True
+EVT_011,campus_event,Campus Event (Synthetic Scenario),2026-04-04T14:00:00,2026-04-04T19:00:00,Central Campus,810,True
+EVT_012,campus_event,Campus Event (Synthetic Scenario),2026-06-15T15:00:00,2026-06-15T19:00:00,North Campus,1621,True
+EVT_013,campus_event,Campus Event (Synthetic Scenario),2026-04-29T15:00:00,2026-04-29T21:00:00,Central Campus,3716,True
+EVT_014,campus_event,Campus Event (Synthetic Scenario),2026-05-20T16:00:00,2026-05-20T19:00:00,Library,806,True
+EVT_015,campus_event,Campus Event (Synthetic Scenario),2026-07-12T17:00:00,2026-07-12T21:00:00,North Campus,1382,True
+EVT_016,campus_event,Campus Event (Synthetic Scenario),2026-06-14T10:00:00,2026-06-14T19:00:00,Central Campus,2907,True
+EVT_017,campus_event,Campus Event (Synthetic Scenario),2026-07-15T12:00:00,2026-07-15T19:00:00,North Campus,4200,True
+EVT_018,campus_event,Campus Event (Synthetic Scenario),2026-06-24T16:00:00,2026-06-24T21:00:00,North Campus,1790,True
+EVT_019,campus_event,Campus Event (Synthetic Scenario),2026-09-14T17:00:00,2026-09-14T20:00:00,Central Campus,1667,True
+EVT_020,campus_event,Campus Event (Synthetic Scenario),2026-05-30T14:00:00,2026-05-30T21:00:00,North Campus,1503,True
+EVT_021,campus_event,Campus Event (Synthetic Scenario),2026-07-08T17:00:00,2026-07-08T19:00:00,Library,1073,True
+EVT_022,campus_event,Campus Event (Synthetic Scenario),2026-09-02T10:00:00,2026-09-02T19:00:00,North Campus,2344,True
+EVT_023,campus_event,Campus Event (Synthetic Scenario),2026-06-26T17:00:00,2026-06-26T19:00:00,Library,4490,True
+EVT_024,campus_event,Campus Event (Synthetic Scenario),2026-08-09T15:00:00,2026-08-09T21:00:00,Central Campus,4486,True
+EVT_025,campus_event,Campus Event (Synthetic Scenario),2026-09-17T17:00:00,2026-09-17T19:00:00,Central Campus,2738,True
