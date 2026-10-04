@@ -1,30 +1,38 @@
-"""A real bin sensor: camera photo -> Gemini fill estimate -> FREE-WILi gauge -> telemetry row.
+"""A real bin sensor: camera photo -> AI fill estimate -> telemetry row + live web page.
 
     python sensor/bin_sensor.py watch              # live: every new camera photo becomes a reading
     python sensor/bin_sensor.py photo some.jpg     # one reading from a photo file
-    python sensor/bin_sensor.py gauge 65           # just show 65% on the FREE-WILi (no camera, no AI)
+    python sensor/bin_sensor.py set 80             # a manual reading (for demos; marked as manual)
+    python sensor/bin_sensor.py serve              # only the web page / API
 
-Live use (camera on its "USB 2.0" port, switched on):
-    1. the script ejects the camera's drive so the camera can shoot
-    2. take a photo of the inside of the bin (shutter button)
-    3. unplug and replug the camera cable: the drive comes back, the script reads the newest
-       photo, estimates the fill level, shows it on the FREE-WILi and ejects again
+While `watch` or `serve` runs:
+    http://localhost:8000/             live page (fill level, photo, history)
+    http://localhost:8000/api/latest   the newest reading as JSON  (CORS open, for the frontend)
+    http://localhost:8000/api/history  every reading so far as JSON
 
 Readings are appended to sensor/data/live_telemetry.csv in the same columns as
 Flux_ReRoute_Synthetic_Data/telemetry_hourly.csv (with is_synthetic = False), and the most
-recent one is also written to sensor/data/latest.json.
+recent one is written to sensor/data/latest.json.
+
+The fill estimate comes from Gemini; if Gemini fails (rate limit, outage) it falls back to an
+NVIDIA NIM vision model. Keys go in sensor/.env (GEMINI_API_KEY, NVIDIA_API_KEY).
 """
 
 from __future__ import annotations
 
 import argparse
+import base64
 import csv
 import datetime as dt
+import http.server
+import io
 import json
 import os
 import pathlib
+import re
 import shutil
 import sys
+import threading
 import time
 
 HERE = pathlib.Path(__file__).resolve().parent
@@ -34,14 +42,18 @@ import usb_disk  # noqa: E402
 
 CAPTURES = HERE / "captures"
 DATA = HERE / "data"
+WEB = HERE / "web"
 TELEMETRY = DATA / "live_telemetry.csv"
 LATEST = DATA / "latest.json"
+LATEST_PHOTO = DATA / "latest.jpg"
 COLUMNS = ["timestamp", "bin_id", "fill_pct", "fill_rate_pct_per_hr", "temperature_c_synthetic",
            "precipitation_mm_synthetic", "event_type", "event_attendance", "collection_occurred", "is_synthetic"]
-NUM_LEDS = 7
+PORT = 8000
+NVIDIA_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
+NVIDIA_MODEL = "meta/llama-3.2-90b-vision-instruct"
 
 PROMPT = """You are the vision part of a smart trash-bin sensor. The photo was taken by a camera
-mounted above or inside a bin, looking at its contents.
+looking into a bin at its contents.
 Estimate how full the bin is, as a percentage of its usable volume: 0 = empty, 100 = full to
 the rim or overflowing. Judge from how high the contents reach relative to the rim and walls.
 If the photo does not show the inside of a bin, box or other container, set is_bin to false
@@ -51,86 +63,100 @@ Reply with JSON only: {"is_bin": true or false, "fill_pct": integer 0-100,
 
 
 # ---------------------------------------------------------------- vision
-def estimate_fill(photo: pathlib.Path) -> dict:
-    """Ask Gemini how full the bin in `photo` is. Returns the parsed JSON reply."""
-    from google import genai
-    from google.genai import types
+def small_jpeg(photo: pathlib.Path, longest: int = 768) -> bytes:
+    """The photo shrunk for upload: faster, and under NVIDIA's inline image size limit."""
+    from PIL import Image
 
-    api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
-    if not api_key:
-        sys.exit("Set GEMINI_API_KEY in sensor/.env")
-    client = genai.Client(api_key=api_key)
-    response = client.models.generate_content(
-        model=os.environ.get("GEMINI_MODEL", "gemini-3.5-flash-lite"),
-        contents=[types.Part.from_bytes(data=photo.read_bytes(), mime_type="image/jpeg"), PROMPT],
-        config=types.GenerateContentConfig(response_mime_type="application/json", temperature=0),
-    )
-    reply = json.loads(response.text)
-    reply["fill_pct"] = max(0, min(100, int(reply.get("fill_pct", 0))))
+    image = Image.open(photo).convert("RGB")
+    image.thumbnail((longest, longest))
+    out = io.BytesIO()
+    image.save(out, "JPEG", quality=80)
+    return out.getvalue()
+
+
+def _parse(text: str) -> dict:
+    found = re.search(r"\{.*\}", text, re.DOTALL)  # tolerate code fences or prose around the JSON
+    reply = json.loads(found.group(0) if found else text)
+    reply["fill_pct"] = max(0, min(100, int(float(reply.get("fill_pct", 0)))))
+    reply["is_bin"] = bool(reply.get("is_bin"))
     return reply
 
 
-# ---------------------------------------------------------------- FREE-WILi gauge
-class Gauge:
-    """The FREE-WILi's 7 LEDs as a fill gauge, plus the percentage on its screen."""
+def ask_gemini(jpeg: bytes) -> dict:
+    from google import genai
+    from google.genai import types
 
-    def __init__(self) -> None:
-        self._fw = None
+    model = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash-lite")
+    client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+    response = client.models.generate_content(
+        model=model,
+        contents=[types.Part.from_bytes(data=jpeg, mime_type="image/jpeg"), PROMPT],
+        config=types.GenerateContentConfig(response_mime_type="application/json", temperature=0),
+    )
+    return {**_parse(response.text), "model": model}
+
+
+def ask_nvidia(jpeg: bytes) -> dict:
+    import requests
+
+    model = os.environ.get("NVIDIA_MODEL", NVIDIA_MODEL)
+    image = base64.b64encode(jpeg).decode()
+    response = requests.post(
+        NVIDIA_URL,
+        headers={"Authorization": f"Bearer {os.environ['NVIDIA_API_KEY']}", "Accept": "application/json"},
+        json={
+            "model": model,
+            "messages": [{"role": "user", "content": [
+                {"type": "text", "text": PROMPT},
+                {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{image}"}},
+            ]}],
+            "max_tokens": 200,
+            "temperature": 0,
+        },
+        timeout=60,
+    )
+    response.raise_for_status()
+    return {**_parse(response.json()["choices"][0]["message"]["content"]), "model": model}
+
+
+PROVIDERS = {"gemini": ("GEMINI_API_KEY", ask_gemini), "nvidia": ("NVIDIA_API_KEY", ask_nvidia)}
+
+
+def estimate_fill(photo: pathlib.Path, provider: str = "auto") -> dict:
+    """How full is the bin in `photo`? Tries Gemini, then NVIDIA, unless one provider is forced."""
+    jpeg = small_jpeg(photo)
+    order = ["gemini", "nvidia"] if provider == "auto" else [provider]
+    errors = []
+    for name in order:
+        key, ask = PROVIDERS[name]
+        if not os.environ.get(key):
+            errors.append(f"{name}: {key} is not set")
+            continue
         try:
-            from freewili import FreeWili
-
-            found = FreeWili.find_first()
-            if found.is_ok():
-                self._fw = found.unwrap()
-                self._fw.open().expect("could not open the FREE-WILi")
-        except Exception as ex:  # noqa: BLE001 - the sensor still works without the gauge
-            print(f"  (no FREE-WILi gauge: {ex})")
-            self._fw = None
-        if self._fw is None:
-            print("  (FREE-WILi not found: readings will only be printed and saved)")
-
-    @staticmethod
-    def leds_for(fill_pct: int) -> tuple[int, tuple[int, int, int]]:
-        """How many LEDs to light and in what colour: green below 50%, amber to 80%, red above."""
-        lit = 0 if fill_pct <= 0 else max(1, min(NUM_LEDS, round(fill_pct * NUM_LEDS / 100)))
-        color = (0, 50, 0) if fill_pct < 50 else (50, 30, 0) if fill_pct < 80 else (60, 0, 0)
-        return lit, color
-
-    def show(self, fill_pct: int, text: str | None = None) -> None:
-        lit, color = self.leds_for(fill_pct)
-        if self._fw is None:
-            return
-        for led in range(NUM_LEDS):
-            self._fw.set_board_leds(led, *(color if led < lit else (0, 0, 0)))
-        self._fw.show_text_display(text or f"{fill_pct}% full")
-
-    def message(self, text: str) -> None:
-        if self._fw is not None:
-            self._fw.show_text_display(text)
-
-    def close(self) -> None:
-        if self._fw is not None:
-            self._fw.close()
+            return {**ask(jpeg), "provider": name}
+        except Exception as ex:  # noqa: BLE001 - fall through to the backup provider
+            errors.append(f"{name}: {type(ex).__name__}: {str(ex)[:160]}")
+            print(f"  ({errors[-1]})")
+    raise RuntimeError("no AI provider answered: " + " | ".join(errors))
 
 
 # ---------------------------------------------------------------- telemetry
-def last_reading(bin_id: str) -> dict | None:
+def history() -> list[dict]:
     if not TELEMETRY.exists():
-        return None
+        return []
     with TELEMETRY.open(newline="") as handle:
-        rows = [row for row in csv.DictReader(handle) if row["bin_id"] == bin_id]
-    return rows[-1] if rows else None
+        return list(csv.DictReader(handle))
 
 
-def record(bin_id: str, fill_pct: int, estimate: dict, photo: pathlib.Path) -> dict:
+def record(bin_id: str, fill_pct: int, extra: dict, photo: pathlib.Path | None) -> dict:
     """Append one reading in the teammates' telemetry format and refresh latest.json."""
     DATA.mkdir(exist_ok=True)
     now = dt.datetime.now().replace(microsecond=0)
-    previous = last_reading(bin_id)
+    earlier = [row for row in history() if row["bin_id"] == bin_id]
     rate, collected = 0.0, False
-    if previous:
-        hours = (now - dt.datetime.fromisoformat(previous["timestamp"])).total_seconds() / 3600
-        change = fill_pct - float(previous["fill_pct"])
+    if earlier:
+        hours = (now - dt.datetime.fromisoformat(earlier[-1]["timestamp"])).total_seconds() / 3600
+        change = fill_pct - float(earlier[-1]["fill_pct"])
         collected = change <= -30  # a big drop means the bin was emptied
         rate = 0.0 if collected or hours <= 0 else round(change / hours, 3)
     row = {
@@ -144,32 +170,35 @@ def record(bin_id: str, fill_pct: int, estimate: dict, photo: pathlib.Path) -> d
         if new_file:
             writer.writeheader()
         writer.writerow(row)
-    LATEST.write_text(json.dumps({**row, "sensor_provider": "freewili_esp32_p4_eye", "photo": photo.name,
-                                  "confidence": estimate.get("confidence"), "reason": estimate.get("reason")}, indent=2))
+    if photo is not None:
+        LATEST_PHOTO.write_bytes(small_jpeg(photo, longest=960))
+    elif LATEST_PHOTO.exists():
+        LATEST_PHOTO.unlink()
+    LATEST.write_text(json.dumps({**row, "sensor_provider": "esp32_p4_eye_camera", "has_photo": photo is not None,
+                                  **extra}, indent=2))
     return row
 
 
 # ---------------------------------------------------------------- one reading
-def read_photo(photo: pathlib.Path, bin_id: str, gauge: Gauge) -> None:
-    gauge.message("looking")
+def read_photo(photo: pathlib.Path, bin_id: str, provider: str = "auto") -> None:
     started = time.monotonic()
-    estimate = estimate_fill(photo)
+    estimate = estimate_fill(photo, provider)
     seconds = time.monotonic() - started
-    if not estimate.get("is_bin"):
-        print(f"  {photo.name}: not a bin ({estimate.get('reason')}) [{seconds:.1f} s]")
-        gauge.message("no bin")
+    source = f"{estimate['provider']} {estimate['model']}"
+    if not estimate["is_bin"]:
+        print(f"  {photo.name}: not a bin ({estimate.get('reason')}) [{source}, {seconds:.1f} s]", flush=True)
         return
-    fill = estimate["fill_pct"]
-    row = record(bin_id, fill, estimate, photo)
-    gauge.show(fill)
-    lit, _ = Gauge.leds_for(fill)
-    print(f"  {photo.name}: {fill}% full ({estimate.get('confidence')} confidence) [{seconds:.1f} s]")
+    row = record(bin_id, estimate["fill_pct"], {
+        "source": "camera", "confidence": estimate.get("confidence"), "reason": estimate.get("reason"),
+        "ai_provider": estimate["provider"], "ai_model": estimate["model"], "photo": photo.name,
+    }, photo)
+    print(f"  {photo.name}: {row['fill_pct']}% full ({estimate.get('confidence')} confidence) [{source}, {seconds:.1f} s]")
     print(f"    why: {estimate.get('reason')}")
-    print(f"    gauge: {lit} of {NUM_LEDS} LEDs   saved: {row['timestamp']} {bin_id} "
-          f"rate {row['fill_rate_pct_per_hr']} %/h{'  (bin was emptied)' if row['collection_occurred'] else ''}")
+    print(f"    saved: {row['timestamp']} {bin_id} rate {row['fill_rate_pct_per_hr']} %/h"
+          f"{'  (bin was emptied)' if row['collection_occurred'] else ''}", flush=True)
 
 
-def watch(bin_id: str, gauge: Gauge) -> None:
+def watch(bin_id: str, provider: str) -> None:
     """Turn every new photo on the camera's card into a reading."""
     CAPTURES.mkdir(exist_ok=True)
     seen: set[str] = set()
@@ -191,7 +220,10 @@ def watch(bin_id: str, gauge: Gauge) -> None:
                 for photo in fresh[-1:]:  # only the newest: one reading per replug
                     local = CAPTURES / f"{dt.datetime.now():%H%M%S}_{photo.name}"
                     shutil.copy2(photo, local)
-                    read_photo(local, bin_id, gauge)
+                    try:
+                        read_photo(local, bin_id, provider)
+                    except Exception as ex:  # noqa: BLE001 - keep watching
+                        print(f"  {photo.name}: reading failed: {ex}", flush=True)
                 usb_disk.eject()
                 print("  camera released: ready for the next photo", flush=True)
                 loaded = usb_disk.is_loaded()
@@ -201,11 +233,53 @@ def watch(bin_id: str, gauge: Gauge) -> None:
         print()
 
 
+# ---------------------------------------------------------------- web page + API
+class Handler(http.server.BaseHTTPRequestHandler):
+    def log_message(self, *_args) -> None:  # keep the terminal for readings
+        pass
+
+    def _send(self, body: bytes, content_type: str, status: int = 200) -> None:
+        self.send_response(status)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        self.wfile.write(body)
+
+    def do_GET(self) -> None:  # noqa: N802 - http.server's naming
+        path = self.path.split("?")[0]
+        if path == "/api/latest":
+            body = LATEST.read_bytes() if LATEST.exists() else b"null"
+            self._send(body, "application/json")
+        elif path == "/api/history":
+            self._send(json.dumps(history()).encode(), "application/json")
+        elif path == "/photo/latest.jpg" and LATEST_PHOTO.exists():
+            self._send(LATEST_PHOTO.read_bytes(), "image/jpeg")
+        elif path in ("/", "/index.html"):
+            self._send((WEB / "index.html").read_bytes(), "text/html; charset=utf-8")
+        else:
+            self._send(b"not found", "text/plain", 404)
+
+
+def serve(block: bool) -> None:
+    server = http.server.ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
+    print(f"Live page: http://localhost:{PORT}/   API: http://localhost:{PORT}/api/latest", flush=True)
+    if block:
+        try:
+            server.serve_forever()
+        except KeyboardInterrupt:
+            print()
+    else:
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+
+
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Bin fill sensor: ESP32-P4-EYE camera + Gemini + FREE-WILi gauge.")
-    parser.add_argument("mode", choices=["watch", "photo", "gauge"])
-    parser.add_argument("value", nargs="?", help="photo path (photo mode) or a percentage (gauge mode)")
+    parser = argparse.ArgumentParser(description="Bin fill sensor: ESP32-P4-EYE camera + AI vision.")
+    parser.add_argument("mode", choices=["watch", "photo", "set", "serve"])
+    parser.add_argument("value", nargs="?", help="photo path (photo mode) or a percentage (set mode)")
     parser.add_argument("--bin", default="BIN_001", help="bin_id this sensor reports as (default BIN_001)")
+    parser.add_argument("--provider", choices=["auto", "gemini", "nvidia"], default="auto")
     args = parser.parse_args()
 
     try:
@@ -215,17 +289,16 @@ def main() -> None:
     except ImportError:
         pass
 
-    gauge = Gauge()
-    try:
-        if args.mode == "gauge":
-            gauge.show(int(args.value))
-            print(f"gauge set to {args.value}%: {Gauge.leds_for(int(args.value))[0]} of {NUM_LEDS} LEDs")
-        elif args.mode == "photo":
-            read_photo(pathlib.Path(args.value), args.bin, gauge)
-        else:
-            watch(args.bin, gauge)
-    finally:
-        gauge.close()
+    if args.mode == "serve":
+        serve(block=True)
+    elif args.mode == "set":
+        row = record(args.bin, max(0, min(100, int(args.value))), {"source": "manual", "reason": "set by hand"}, None)
+        print(f"manual reading saved: {row['timestamp']} {args.bin} {row['fill_pct']}%")
+    elif args.mode == "photo":
+        read_photo(pathlib.Path(args.value), args.bin, args.provider)
+    else:
+        serve(block=False)
+        watch(args.bin, args.provider)
 
 
 if __name__ == "__main__":

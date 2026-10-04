@@ -1,5 +1,4 @@
-# freewili: the library for the older FREE-WILi firmware, the only one with WILEye camera commands.
-# It pins typing-extensions==4.12.2, and google-genai 1.67+ crashes on import with that version.
-freewili>=0.0.51
 google-genai>=1.50,<1.67
 python-dotenv>=1.0
+pillow>=10
+requests>=2.31
