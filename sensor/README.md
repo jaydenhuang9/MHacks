@@ -145,8 +145,21 @@ How the camera behaves (measured):
 - With both cables connected, restarting the camera from the laptop brings the card back in
   3.8 s, twice in a row, and the Read bin button runs the whole cycle with no replug.
 
-Not verified: demo mode on a Mac (it was written to be portable but only run on Windows),
-poor lighting, and a button-triggered live reading of a brand-new photo.
+- The full live cycle (press the shutter, click Read bin, no replug) ran five times in a row
+  on real bins: 15%, 25%, 25%, 25% and 80%, each AI call about 2 s.
+- Demo mode stepped through both stored photos with `--provider stored`: 10%, then 80%.
+
+Not verified: demo mode on a Mac (it was written to be portable but only run on Windows), and
+poor lighting.
+
+## The demo photos
+| File | What it is | Stored result |
+|---|---|---|
+| `demo_photos/01_nearly_empty.jpg` | landfill bin with two cups at the bottom | 10% |
+| `demo_photos/02_full.jpg` | bin filled to the rim with paper towels | 80% |
+
+Both were taken with the bin camera on Sun Oct 4. They replay in file-name order and loop.
+The page turns red and says "Full: schedule a pickup" at 80% and above.
 
 ## What was dropped
 A FREE-WILi was part of the first version (LED fill gauge). It was removed because it only
