@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>FLUX</title>
+
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+
+    <!-- Our CSS -->
+    <link rel="stylesheet" href="map.css">
+</head>
+
+<body>
+
+    <header>
+
+        <h1>
+            <span>FL</span>UX
+        </h1>
+
+        <span id="simBadge">
+            Waste Management Data
+        </span>
+
+        <div class="controls" id="controls">
+
+            <label class="chip">
+                <input type="checkbox" data-type="trash" checked>
+                <span class="sw" style="background:#4b5563"></span>
+                Trash
+            </label>
+
+            <label class="chip">
+                <input type="checkbox" data-type="recycling" checked>
+                <span class="sw" style="background:#2e86de"></span>
+                Recycling
+            </label>
+
+            <label class="chip">
+                <input type="checkbox" data-type="compost" checked>
+                <span class="sw" style="background:#7a4fb5"></span>
+                Compost
+            </label>
+
+            <label class="chip">
+                <input type="checkbox" id="onlyFull">
+                Needs pickup only
+            </label>
+
+            <!-- NEW: DAY SELECTOR -->
+            <label class="day-control">
+                Day
+
+                <select id="daySelect">
+                    <option value="">
+                        Upload telemetry
+                    </option>
+                </select>
+            </label>
+
+            <label class="btn" for="file">
+                Upload data files
+            </label>
+
+            <input type="file" id="file" multiple accept=".csv">
+
+            <button id="nearestBtn" class="ghost">
+                Find nearest bin
+            </button>
+
+            <button id="baselineBtn" class="ghost">
+                Show Baseline Routes
+            </button>
+
+            <button id="routeBtn">
+                Create Route
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <main>
+
+        <!-- MAP -->
+
+        <div id="mapwrap">
+
+            <div id="map" role="application" aria-label="Map of waste bins on campus"></div>
+
+            <div id="status" role="status"></div>
+
+        </div>
+
+
+        <!-- SIDE PANEL -->
+
+        <aside>
+
+            <!-- LEGEND -->
+
+            <h2>
+                Key
+            </h2>
+
+            <div class="legend">
+
+                <div>
+                    <span class="pill" style="background:var(--ok)"></span>
+
+                    Under 50% full
+                </div>
+
+                <div>
+                    <span class="pill" style="background:var(--mid)"></span>
+
+                    50–79% full
+                </div>
+
+                <div>
+                    <span class="pill" style="background:var(--full)"></span>
+
+                    80%+ full
+                </div>
+
+                <div>
+                    <span class="pill" style="background:#fff;border:1px solid #999"></span>
+
+                    No data
+                </div>
+
+                <div>
+                    <span class="pill truck-key"></span>
+                    Truck
+                </div>
+
+                <div>
+                    <span class="pill station-key"></span>
+                    Station
+                </div>
+
+            </div>
+
+            <h2>
+                Status
+                <span id="count"></span>
+            </h2>
+
+            <div id="eventBox"></div>
+
+            <div id="summary"></div>
+
+
+            <!-- EFFICIENCY -->
+
+            <div class="sidebar-section">
+
+                <h3>Pickup Efficiency</h3>
+
+                <div id="pickupEfficiency">
+                    <div class="empty-routes">
+                        Create a route to see pickup efficiency.
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- SAVED ROUTES -->
+
+            <div class="sidebar-section">
+
+                <div id="createdRoutes">
+
+                    <div class="empty-routes">
+                        No routes created yet.
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- FULL BINS -->
+
+            <h2>
+                Needs pickup (80%+)
+            </h2>
+
+            <div id="list">
+                <small>
+                    Upload telemetry to see this list.
+                </small>
+            </div>
+
+
+            <!-- EXPLANATION -->
+
+            <h2>
+                How optimization works
+            </h2>
+
+            <small>
+
+                The system estimates fuel using truck MPG
+                and route distance.
+
+                It compares a simple baseline route
+                with an optimized route.
+
+                The optimizer can:
+
+                <ul>
+                    <li>Use the closest available truck</li>
+                    <li>Combine nearby pickups</li>
+                    <li>Avoid unnecessary miles</li>
+                    <li>Reduce estimated fuel use</li>
+                </ul>
+
+                Fuel savings are simulated estimates
+                for this hackathon demo.
+
+            </small>
+
+
+            <!-- UPLOAD -->
+
+            <h2>
+                Upload
+            </h2>
+
+            <small>
+
+                Upload:
+
+                <b>bins.csv</b>
+
+                <br>
+
+                <b>telemetry_hourly.csv</b>
+
+                <br>
+
+                <b>stations.csv</b>
+
+                <br>
+
+                <b>trucks.csv</b>
+
+                <br>
+
+                Optional:
+
+                <b>collections.csv</b>
+
+                and
+
+                <b>events.csv</b>
+
+            </small>
+
+        </aside>
+
+    </main>
+
+
+    <!-- DRAG AND DROP -->
+
+    <div id="drop">
+        Drop files to load
+    </div>
+
+
+    <!-- Leaflet -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js">
+    </script>
+
+
+    <!-- Our JavaScript -->
+
+    <script src="map.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,7 @@
+timestamp,truck_id,station_id,status,latitude,longitude,target_bin_id,progress_pct,mpg
+2026-09-28T08:00,TRUCK-01,Internal University Yard,idle,42.3025,-83.7144,,0,3.0
+2026-09-28T08:00,TRUCK-02,Internal University Yard,idle,42.3028,-83.7140,,0,3.2
+2026-09-28T08:00,TRUCK-03,Internal University Yard,idle,42.3022,-83.7148,,0,3.1
+2026-09-28T08:00,TRUCK-04,Internal University Yard,idle,42.3029,-83.7147,,0,3.4
+2026-09-28T08:00,TRUCK-05,Internal University Yard,idle,42.3021,-83.7141,,0,3.0
+2026-09-28T08:00,TRUCK-06,Internal University Yard,idle,42.3026,-83.7139,,0,3.3

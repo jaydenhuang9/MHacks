@@ -1,0 +1,1289 @@
+/* =========================================================
+   1. COLORS — LIGHT GREEN AURORA
+========================================================= */
+
+:root {
+   /* Light Green Aurora */
+   --aurora-light: #e9f8f0;
+   --aurora: #d5f1e3;
+   --aurora-soft: #f3fbf7;
+   --aurora-glow: #c2ead6;
+
+   /* Main Greens */
+   --green: #4f9f7d;
+   --green-light: #bfe5d0;
+   --green-dark: #245c49;
+   --green-deep: #174638;
+
+   /* Text */
+   --ink: #244238;
+   --muted: #647c72;
+   --soft-text: #789087;
+
+   /* Bin status colors */
+   --ok: #3aa76d;
+   --mid: #f2a900;
+   --full: #d64545;
+
+   /* Borders */
+   --border: #cfe5d9;
+
+   /* Shadows */
+   --shadow:
+      0 4px 14px rgba(44, 92, 70, 0.10);
+}
+
+
+/* =========================================================
+   2. RESET
+========================================================= */
+
+* {
+   box-sizing: border-box;
+}
+
+
+/* =========================================================
+   3. PAGE
+========================================================= */
+
+html,
+body {
+   height: 100%;
+   margin: 0;
+
+   font-family:
+      system-ui,
+      -apple-system,
+      "Segoe UI",
+      sans-serif;
+
+   color: var(--ink);
+}
+
+
+/*
+   Light green Aurora background.
+*/
+
+body {
+   display: flex;
+   flex-direction: column;
+
+   background:
+      radial-gradient(circle at 5% 5%,
+         rgba(194, 234, 214, 0.75),
+         transparent 30%),
+      radial-gradient(circle at 95% 10%,
+         rgba(213, 241, 227, 0.85),
+         transparent 32%),
+      radial-gradient(circle at 50% 100%,
+         rgba(191, 230, 209, 0.55),
+         transparent 40%),
+      linear-gradient(135deg,
+         #f0fbf5,
+         #e5f7ed,
+         #f4fcf8);
+}
+
+
+/* =========================================================
+   4. HEADER
+========================================================= */
+
+header {
+   /*
+       Dark green Aurora header.
+    */
+
+   background:
+      linear-gradient(110deg,
+         #174638 0%,
+         #245c49 40%,
+         #3f896b 75%,
+         #5ca883 100%);
+
+   color: white;
+
+   padding: 10px 16px;
+
+   display: flex;
+
+   gap: 12px;
+
+   align-items: center;
+
+   flex-wrap: wrap;
+
+   box-shadow:
+      0 4px 16px rgba(36, 92, 73, 0.22);
+}
+
+
+/* Main title */
+
+header h1 {
+   font-size: 18px;
+
+   margin: 0;
+
+   color: #f4fff9;
+
+   text-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+
+/* Highlight inside title */
+
+header h1 span {
+   color: #bfead2;
+}
+
+
+/* =========================================================
+   5. SIMULATION BADGE
+========================================================= */
+
+#simBadge {
+   background:
+      linear-gradient(135deg,
+         #dff6e9,
+         #bce6cf);
+
+   color: var(--green-dark);
+
+   font-size: 12px;
+
+   font-weight: 700;
+
+   padding: 3px 9px;
+
+   border-radius: 999px;
+
+   border:
+      1px solid rgba(255, 255, 255, 0.5);
+}
+
+
+/* =========================================================
+   6. HEADER CONTROLS
+========================================================= */
+
+.controls {
+   display: flex;
+
+   gap: 8px;
+
+   flex-wrap: wrap;
+
+   margin-left: auto;
+
+   align-items: center;
+}
+
+
+/* =========================================================
+   7. FILTER CHIPS
+========================================================= */
+
+.chip,
+.day-control {
+   display: flex;
+
+   align-items: center;
+
+   gap: 6px;
+
+   padding: 6px 10px;
+
+   border-radius: 999px;
+
+   background:
+      rgba(220, 248, 233, 0.18);
+
+   border:
+      1px solid rgba(210, 246, 226, 0.35);
+
+   backdrop-filter: blur(7px);
+
+   cursor: pointer;
+
+   font-size: 14px;
+
+   color: #f2fff8;
+}
+
+
+/*
+   Green checkbox.
+*/
+
+.chip input {
+   accent-color: var(--green-light);
+}
+
+
+/* =========================================================
+   8. DAY DROPDOWN
+========================================================= */
+
+.day-control select {
+   border: 1px solid var(--green-light);
+
+   border-radius: 7px;
+
+   padding: 4px 7px;
+
+   font: inherit;
+
+   color: var(--green-dark);
+
+   background: #effaf4;
+
+   outline: none;
+}
+
+
+/* =========================================================
+   9. COLOR DOT
+========================================================= */
+
+.sw {
+   width: 10px;
+
+   height: 10px;
+
+   border-radius: 50%;
+
+   display: inline-block;
+}
+
+
+/* =========================================================
+   10. BUTTONS
+========================================================= */
+
+button,
+.btn {
+   font: inherit;
+
+   font-size: 14px;
+
+   padding: 7px 12px;
+
+   border-radius: 8px;
+
+   border:
+      1px solid var(--green);
+
+   cursor: pointer;
+
+   background:
+      linear-gradient(135deg,
+         #63ae8b,
+         #408568);
+
+   color: white;
+
+   font-weight: 600;
+
+   display: inline-block;
+
+   transition:
+      transform 0.15s ease,
+      box-shadow 0.15s ease,
+      background 0.15s ease;
+}
+
+
+button:hover,
+.btn:hover {
+   background:
+      linear-gradient(135deg,
+         #4f9f7d,
+         #2d6e56);
+
+   transform: translateY(-1px);
+
+   box-shadow:
+      0 4px 10px rgba(36, 92, 73, 0.18);
+}
+
+
+/*
+   Ghost buttons.
+*/
+
+.ghost {
+   background:
+      rgba(220, 248, 233, 0.14);
+
+   color: #effff7;
+
+   border:
+      1px solid rgba(220, 248, 233, 0.35);
+}
+
+
+/* =========================================================
+   11. FILE INPUT
+========================================================= */
+
+#file {
+   position: fixed;
+   left: -9999px;
+   top: -9999px;
+   width: 1px;
+   height: 1px;
+   opacity: 0;
+   pointer-events: none;
+}
+
+
+/* =========================================================
+   12. MAIN PAGE LAYOUT
+========================================================= */
+
+main {
+   flex: 1;
+
+   display: flex;
+
+   min-height: 0;
+}
+
+
+/* =========================================================
+   13. MAP CONTAINER
+========================================================= */
+
+#mapwrap {
+   flex: 1;
+
+   position: relative;
+
+   min-width: 0;
+
+   padding: 7px;
+
+   background:
+      radial-gradient(circle at 20% 15%,
+         rgba(194, 234, 214, 0.50),
+         transparent 35%),
+      radial-gradient(circle at 85% 80%,
+         rgba(213, 241, 227, 0.65),
+         transparent 40%);
+}
+
+
+/*
+   Leaflet map.
+*/
+
+#map {
+   width: 100%;
+
+   height: 100%;
+
+   border-radius: 12px;
+
+   overflow: hidden;
+
+   border:
+      2px solid rgba(170, 217, 192, 0.65);
+
+   box-shadow:
+      0 5px 18px rgba(44, 92, 70, 0.13);
+}
+
+
+/* =========================================================
+   14. SIDE PANEL
+========================================================= */
+
+aside {
+   width: 330px;
+
+   border-left:
+      2px solid var(--aurora);
+
+   padding: 14px;
+
+   overflow: auto;
+
+   /*
+       Light green Aurora sidebar.
+    */
+
+   background:
+      radial-gradient(circle at 20% 5%,
+         rgba(194, 234, 214, 0.75),
+         transparent 35%),
+      radial-gradient(circle at 90% 80%,
+         rgba(213, 241, 227, 0.85),
+         transparent 40%),
+      linear-gradient(180deg,
+         #edf9f2,
+         #e2f4e9);
+
+   font-size: 14px;
+
+   box-shadow:
+      -5px 0 15px rgba(44, 92, 70, 0.07);
+}
+
+
+/* =========================================================
+   15. SIDEBAR HEADINGS
+========================================================= */
+
+aside h2 {
+   font-size: 15px;
+
+   margin: 16px 0 6px;
+
+   color: var(--green-deep);
+
+   letter-spacing: 0.1px;
+}
+
+
+/*
+   Aurora accent underneath headings.
+*/
+
+aside h2::after {
+   content: "";
+
+   display: block;
+
+   width: 36px;
+
+   height: 3px;
+
+   margin-top: 4px;
+
+   border-radius: 999px;
+
+   background:
+      linear-gradient(90deg,
+         var(--green),
+         var(--green-light));
+}
+
+
+aside h2:first-child {
+   margin-top: 0;
+}
+
+
+/* =========================================================
+   16. STAT ROW
+========================================================= */
+
+.stat {
+   display: flex;
+
+   justify-content: space-between;
+
+   padding: 5px 0;
+
+   border-bottom:
+      1px solid rgba(174, 210, 191, 0.55);
+
+   color: var(--ink);
+}
+
+
+.stat b {
+   color: var(--green-dark);
+}
+
+
+/* =========================================================
+   17. LEGEND DOTS
+========================================================= */
+
+.pill {
+   display: inline-block;
+
+   width: 10px;
+
+   height: 10px;
+
+   border-radius: 50%;
+
+   margin-right: 6px;
+}
+
+
+/*
+   Truck = dark green.
+*/
+
+.truck-key {
+   background: var(--green-dark);
+
+   border:
+      2px solid var(--green-light);
+}
+
+
+/*
+   Station = light green.
+*/
+
+.station-key {
+   background: var(--green-light);
+
+   border:
+      2px solid var(--green-dark);
+}
+
+
+/* =========================================================
+   18. BIN LIST
+========================================================= */
+
+.row {
+   width: 100%;
+
+   text-align: left;
+
+   background:
+      rgba(249, 255, 251, 0.90);
+
+   color: var(--ink);
+
+   border:
+      1px solid var(--border);
+
+   margin-bottom: 6px;
+
+   padding: 8px 10px;
+
+   font-weight: 500;
+
+   display: flex;
+
+   justify-content: space-between;
+
+   border-radius: 8px;
+
+   box-shadow:
+      0 2px 6px rgba(44, 92, 70, 0.05);
+
+   transition:
+      border-color 0.15s ease,
+      transform 0.15s ease;
+}
+
+
+.row:hover {
+   border-color: var(--green);
+
+   transform: translateX(2px);
+}
+
+
+/*
+   Full bin percentage remains RED.
+*/
+
+.row b {
+   color: var(--full);
+}
+
+
+/* =========================================================
+   19. EVENT BOX
+========================================================= */
+
+#eventBox {
+   background:
+      linear-gradient(135deg,
+         #edf9f2,
+         #d8f0e2);
+
+   border:
+      1px solid var(--green-light);
+
+   border-radius: 9px;
+
+   padding: 8px 10px;
+
+   display: none;
+
+   color: var(--green-dark);
+}
+
+
+/* =========================================================
+   20. LEGEND TEXT
+========================================================= */
+
+.legend {
+   color: var(--muted);
+
+   line-height: 1.7;
+}
+
+
+/* =========================================================
+   21. STATUS MESSAGE
+========================================================= */
+
+#status {
+   position: absolute;
+
+   left: 50%;
+
+   bottom: 20px;
+
+   transform: translateX(-50%);
+
+   z-index: 1000;
+
+   background:
+      linear-gradient(135deg,
+         #245c49,
+         #3f8f70);
+
+   color: white;
+
+   padding: 9px 14px;
+
+   border-radius: 10px;
+
+   font-size: 14px;
+
+   max-width: 90%;
+
+   display: none;
+
+   box-shadow:
+      0 4px 14px rgba(36, 92, 73, 0.25);
+}
+
+
+/* =========================================================
+   22. DRAG-AND-DROP OVERLAY
+========================================================= */
+
+#drop {
+   position: fixed;
+
+   inset: 0;
+
+   z-index: 3000;
+
+   background:
+      linear-gradient(135deg,
+         rgba(36, 92, 73, 0.92),
+         rgba(79, 159, 125, 0.92));
+
+   color: white;
+
+   display: none;
+
+   align-items: center;
+
+   justify-content: center;
+
+   font-size: 24px;
+
+   font-weight: 700;
+
+   backdrop-filter: blur(8px);
+}
+
+
+/* =========================================================
+   23. BIN BADGES
+========================================================= */
+
+.badge {
+   width: 34px;
+
+   height: 34px;
+
+   border-radius: 50%;
+
+   border: 4px solid;
+
+   display: grid;
+
+   place-items: center;
+
+   font: 700 11px system-ui;
+
+   color: white;
+
+   box-shadow:
+      0 1px 5px rgba(0, 0, 0, 0.4);
+}
+
+
+/*
+   Bin status colors remain functional.
+*/
+
+.badge.ok {
+   background: var(--ok);
+}
+
+
+.badge.mid {
+   background: var(--mid);
+
+   color: var(--green-dark);
+}
+
+
+.badge.full {
+   background: var(--full);
+}
+
+
+.badge.none {
+   background: white;
+
+   color: #667;
+
+   border-color: #b8cbc1;
+}
+
+
+/* =========================================================
+   24. TRUCK ICON
+========================================================= */
+
+.truck-icon {
+   width: 42px;
+
+   height: 42px;
+
+   border-radius: 50%;
+
+   background:
+      linear-gradient(135deg,
+         #245c49,
+         #4f9f7d);
+
+   border:
+      4px solid var(--green-light);
+
+   color: white;
+
+   display: grid;
+
+   place-items: center;
+
+   font-size: 18px;
+
+   box-shadow:
+      0 2px 8px rgba(36, 92, 73, 0.35);
+}
+
+
+.truck-icon.enroute {
+   animation: truckPulse 1s infinite;
+}
+
+
+@keyframes truckPulse {
+
+   0%,
+   100% {
+      transform: scale(1);
+   }
+
+   50% {
+      transform: scale(1.08);
+   }
+}
+
+
+/* =========================================================
+   25. STATION ICON
+========================================================= */
+
+.station-icon {
+   width: 36px;
+
+   height: 36px;
+
+   background:
+      linear-gradient(135deg,
+         #dff4e9,
+         #b9e3cb);
+
+   border:
+      3px solid var(--green-dark);
+
+   border-radius: 50%;
+
+   display: flex;
+
+   align-items: center;
+
+   justify-content: center;
+
+   font-size: 20px;
+
+   box-shadow:
+      0 2px 6px rgba(36, 92, 73, 0.25);
+}
+
+
+/* =========================================================
+   26. ROUTE LINES
+========================================================= */
+
+.route-line {
+   stroke-dasharray: 10 8;
+
+   animation:
+      routeMove 1s linear infinite;
+}
+
+
+@keyframes routeMove {
+
+   to {
+      stroke-dashoffset: -18;
+   }
+}
+
+
+/* =========================================================
+   27. DISPATCH CARDS
+========================================================= */
+
+.dispatch-card,
+.efficiency-card {
+   background:
+      linear-gradient(135deg,
+         #ffffff,
+         #edf9f2);
+
+   border:
+      1px solid var(--border);
+
+   border-radius: 9px;
+
+   padding: 10px;
+
+   margin-bottom: 8px;
+
+   box-shadow:
+      var(--shadow);
+}
+
+
+.dispatch-card b,
+.efficiency-card b {
+   color: var(--green-dark);
+}
+
+
+.dispatch-status,
+.reason {
+   font-size: 12px;
+
+   margin-top: 4px;
+
+   line-height: 1.45;
+
+   color: var(--muted);
+}
+
+
+.dispatch-btn {
+   width: 100%;
+
+   margin-top: 8px;
+
+   background:
+      linear-gradient(135deg,
+         #4f9f7d,
+         #34785d);
+}
+
+
+/* =========================================================
+   28. EFFICIENCY METRICS
+========================================================= */
+
+.metric-grid {
+   display: grid;
+
+   grid-template-columns: 1fr 1fr;
+
+   gap: 6px;
+}
+
+
+.metric {
+   background:
+      linear-gradient(135deg,
+         #f9fffb,
+         #e5f5ec);
+
+   border:
+      1px solid var(--border);
+
+   border-radius: 7px;
+
+   padding: 7px;
+
+   box-shadow:
+      0 2px 6px rgba(44, 92, 70, 0.05);
+}
+
+
+.metric strong {
+   display: block;
+
+   font-size: 17px;
+
+   color: var(--green-dark);
+}
+
+
+.metric small {
+   color: var(--soft-text);
+}
+
+
+.fuel-good,
+.savings-number {
+   color: var(--green) !important;
+}
+
+
+/* =========================================================
+   29. ROUTE SELECTION MODE
+========================================================= */
+
+#routeBtn.active {
+   background:
+      linear-gradient(135deg,
+         #245c49,
+         #4f9f7d);
+
+   color: white;
+
+   border-color: var(--green-dark);
+
+   box-shadow:
+      0 0 0 3px var(--green-light);
+}
+
+
+.route-selecting {
+   cursor: crosshair !important;
+}
+
+
+.selected-route-bin {
+   animation:
+      selectedBinPulse 1s infinite;
+}
+
+
+@keyframes selectedBinPulse {
+
+   0%,
+   100% {
+      transform: scale(1);
+   }
+
+   50% {
+      transform: scale(1.15);
+   }
+}
+
+
+/* =========================================================
+   30. ROUTE SELECTION CARDS
+========================================================= */
+
+.route-selection-card {
+   background:
+      linear-gradient(135deg,
+         #edf9f2,
+         #d9f1e3);
+
+   border:
+      1px solid var(--green-light);
+
+   border-radius: 8px;
+
+   padding: 10px;
+
+   margin-bottom: 8px;
+
+   box-shadow:
+      0 3px 9px rgba(44, 92, 70, 0.07);
+}
+
+
+.route-truck-card {
+   background:
+      #f8fdf9;
+
+   border:
+      1px solid var(--border);
+
+   border-radius: 8px;
+
+   padding: 10px;
+
+   margin-bottom: 8px;
+}
+
+
+.route-truck-card b {
+   color: var(--green-dark);
+}
+
+
+.route-bin-list {
+   margin-top: 6px;
+
+   padding-left: 16px;
+}
+
+
+/* =========================================================
+   31. ROUTE HELP
+========================================================= */
+
+.route-help {
+   font-size: 14px;
+
+   line-height: 1.5;
+
+   color: var(--muted);
+}
+
+
+.route-help p {
+   margin-bottom: 0;
+}
+
+
+/* =========================================================
+   32. SAVED ROUTES
+========================================================= */
+
+.routes-title {
+   font-size: 18px;
+
+   font-weight: 700;
+
+   margin-bottom: 12px;
+
+   color: var(--green-deep);
+}
+
+
+.routes-title::after {
+   content: "";
+
+   display: block;
+
+   width: 40px;
+
+   height: 3px;
+
+   margin-top: 5px;
+
+   border-radius: 999px;
+
+   background:
+      linear-gradient(90deg,
+         var(--green),
+         var(--green-light));
+}
+
+
+.empty-routes {
+   color: var(--soft-text);
+
+   font-size: 14px;
+
+   padding: 12px 0;
+}
+
+
+/*
+   Saved route card.
+*/
+
+.saved-route {
+   border:
+      1px solid var(--border);
+
+   border-radius: 10px;
+
+   padding: 12px;
+
+   margin-bottom: 12px;
+
+   background:
+      linear-gradient(135deg,
+         #ffffff,
+         #edf9f2);
+
+   box-shadow:
+      var(--shadow);
+}
+
+
+.saved-route-header {
+   display: flex;
+
+   align-items: center;
+
+   justify-content: space-between;
+
+   gap: 10px;
+
+   margin-bottom: 8px;
+}
+
+
+.saved-route-header strong {
+   font-size: 16px;
+
+   color: var(--green-dark);
+}
+
+
+/*
+   Delete button.
+*/
+
+.delete-route-btn {
+   border: none;
+
+   background:
+      #6ca98a;
+
+   color: white;
+
+   padding: 6px 10px;
+
+   border-radius: 6px;
+
+   cursor: pointer;
+
+   font-size: 12px;
+}
+
+
+.delete-route-btn:hover {
+   background:
+      #4f8f71;
+}
+
+
+.route-stats {
+   display: flex;
+
+   gap: 10px;
+
+   flex-wrap: wrap;
+
+   font-size: 13px;
+
+   margin-bottom: 6px;
+
+   color: var(--muted);
+}
+
+
+.route-savings {
+   font-size: 13px;
+
+   font-weight: 600;
+
+   margin-bottom: 8px;
+
+   color: var(--green);
+}
+
+
+.route-trucks {
+   font-size: 12px;
+
+   line-height: 1.7;
+
+   color: var(--soft-text);
+}
+
+
+/* =========================================================
+   33. LEAFLET POPUPS
+========================================================= */
+
+.leaflet-popup-content-wrapper {
+   border-radius: 10px;
+
+   background:
+      linear-gradient(135deg,
+         #f5fcf8,
+         #e6f5ec);
+
+   box-shadow:
+      0 5px 18px rgba(36, 92, 73, 0.18);
+}
+
+
+.leaflet-popup-content {
+   color: var(--ink);
+}
+
+
+.leaflet-popup-tip {
+   background: #e9f7ef;
+}
+
+
+/* =========================================================
+   34. MOBILE RESPONSIVE DESIGN
+========================================================= */
+
+@media (max-width: 760px) {
+
+   main {
+      flex-direction: column;
+   }
+
+
+   #mapwrap {
+      min-height: 55vh;
+
+      padding: 5px;
+   }
+
+
+   aside {
+      width: 100%;
+
+      max-height: 45%;
+
+      border-left: 0;
+
+      border-top:
+         2px solid var(--aurora);
+   }
+
+
+   .controls {
+      margin-left: 0;
+   }
+}
