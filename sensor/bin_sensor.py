@@ -140,6 +140,8 @@ PROVIDERS = {"gemini": ("GEMINI_API_KEY", ask_gemini), "nvidia": ("NVIDIA_API_KE
 def estimate_fill(photo: pathlib.Path, provider: str = "auto") -> dict:
     """How full is the bin in `photo`? Tries Gemini, then NVIDIA, unless one provider is forced."""
     jpeg = small_jpeg(photo)
+    if provider == "stored":
+        raise RuntimeError("stored results only exist for the demo photos (use demo mode)")
     order = ["gemini", "nvidia"] if provider == "auto" else [provider]
     errors = []
     for name in order:

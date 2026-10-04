@@ -11,8 +11,20 @@ Everything here is on the `hardware` branch, in the `sensor/` folder. `main` is 
 ## Demo on any laptop (Mac or Windows, no camera needed)
 
 This is the mode for judging. It replays real photos taken by the bin camera through the same
-pipeline as the live camera. Needs Python 3.10 or newer.
+pipeline as the live camera. **No camera, cables or other hardware are needed**: the photos are
+in this repo. The only requirement is Python 3.10 or newer (https://www.python.org/downloads/).
 
+### Quickest: one command
+```bash
+git fetch && git checkout hardware
+bash sensor/run_demo.sh          # Mac / Linux
+sensor\run_demo.bat               # Windows
+```
+The first run sets itself up (about a minute, needs internet once). Then open
+**http://localhost:8000/** and click **Read bin**. Extra options go on the end, for example
+`bash sensor/run_demo.sh --every 30` or `--provider stored` or `--port 8010`.
+
+### Or step by step
 **Mac / Linux**
 ```bash
 git checkout hardware
