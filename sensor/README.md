@@ -161,8 +161,23 @@ How the camera behaves (measured):
   on real bins: 15%, 25%, 25%, 25% and 80%, each AI call about 2 s.
 - Demo mode stepped through both stored photos with `--provider stored`: 10%, then 80%.
 
-Not verified: demo mode on a Mac (it was written to be portable but only run on Windows), and
-poor lighting.
+- **Fresh-clone test:** the `hardware` branch was cloned from GitHub into an empty folder and
+  started with `sensor\run_demo.bat`, with no API keys and no camera. It set itself up, served
+  the page and photo, and cycled 10% -> 80% -> 10% ... from the stored results.
+
+Not verified: anything on a Mac (`run_demo.sh` and demo mode were written to be portable but
+have only been run on Windows), and poor lighting.
+
+## If something goes wrong
+| Symptom | Fix |
+|---|---|
+| `python3: command not found` / "Python 3 is not installed" | Install Python 3.10+ from https://www.python.org/downloads/ and rerun the launcher |
+| Port 8000 already in use | Add `--port 8010` and open http://localhost:8010/ |
+| Page says "sensor offline" | The script is not running; start it again in a terminal and leave that window open |
+| Readings never change | Click **Read bin**, or start with `--every 30` |
+| AI errors or rate limits in the terminal | Nothing to do: it falls back to the stored result. Or run with `--provider stored` |
+| Setup failed half-way | Delete the `sensor/.venv` folder and run the launcher again |
+| Want a clean table before judging | Stop the script, delete the `sensor/data` folder, start again |
 
 ## The demo photos
 | File | What it is | Stored result |

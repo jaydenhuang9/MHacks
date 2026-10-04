@@ -209,7 +209,8 @@ def read_photo(photo: pathlib.Path, bin_id: str, provider: str = "auto", source:
     except Exception as ex:  # noqa: BLE001
         if cached is None:
             raise
-        print(f"  (live AI unavailable, using the stored result for this photo: {str(ex)[:120]})")
+        if provider != "stored":
+            print(f"  (live AI unavailable, using the stored result for this photo: {str(ex)[:120]})")
         estimate = {**cached, "provider": "stored", "model": cached.get("model", "stored result")}
     seconds = time.monotonic() - started
     label = f"{estimate['provider']} {estimate['model']}"
@@ -261,6 +262,10 @@ def demo(bin_id: str, provider: str, every: float | None) -> None:
     readings = stored_readings()
     STATE["auto"] = True
     print(f"Demo mode: {len(photos)} stored photo(s): {', '.join(p.name for p in photos)}")
+    if provider != "stored" and not any(os.environ.get(key, "").strip() for key, _ in PROVIDERS.values()):
+        provider = "stored"
+        print("No API key in sensor/.env: using the AI results stored with the photos. "
+              "(Add GEMINI_API_KEY to analyse them live.)")
     print("Click 'Read bin' on the page for the next reading" + (f", or wait {every:.0f} s." if every else "."))
     print("Ctrl+C to stop.", flush=True)
     set_state("idle", "")
