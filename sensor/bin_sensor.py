@@ -1,6 +1,7 @@
 """A real bin sensor: camera photo -> AI fill estimate -> telemetry row + live web page.
 
     python sensor/bin_sensor.py watch              # live: every new camera photo becomes a reading
+    python sensor/bin_sensor.py watch --every 20   # also fetch new photos by itself every 20 s
     python sensor/bin_sensor.py photo some.jpg     # one reading from a photo file
     python sensor/bin_sensor.py set 80             # a manual reading (for demos; marked as manual)
     python sensor/bin_sensor.py serve              # only the web page / API
@@ -119,6 +120,15 @@ def ask_nvidia(jpeg: bytes) -> dict:
     return {**_parse(response.json()["choices"][0]["message"]["content"]), "model": model}
 
 
+# What the watcher is doing, for the web page; `read_requested` is set by the page's button.
+STATE = {"state": "starting", "message": "", "auto": False}
+read_requested = threading.Event()
+
+
+def set_state(state: str, message: str = "") -> None:
+    STATE.update(state=state, message=message)
+
+
 PROVIDERS = {"gemini": ("GEMINI_API_KEY", ask_gemini), "nvidia": ("NVIDIA_API_KEY", ask_nvidia)}
 
 
@@ -198,15 +208,41 @@ def read_photo(photo: pathlib.Path, bin_id: str, provider: str = "auto") -> None
           f"{'  (bin was emptied)' if row['collection_occurred'] else ''}", flush=True)
 
 
-def watch(bin_id: str, provider: str) -> None:
-    """Turn every new photo on the camera's card into a reading."""
+def watch(bin_id: str, provider: str, every: float | None) -> None:
+    """Turn every new photo on the camera's card into a reading.
+
+    The card reaches the laptop in one of two ways: someone replugs the camera's USB 2.0 cable,
+    or (with the DEBUG cable also connected) this script restarts the camera itself, on a
+    "Read bin" click from the web page or every `every` seconds.
+    """
     CAPTURES.mkdir(exist_ok=True)
     seen: set[str] = set()
     first_pass = True
-    print("Watching the camera. Take a photo, then unplug and replug its USB 2.0 cable. Ctrl+C to stop.")
+    can_restart = usb_disk.debug_port() is not None
+    STATE["auto"] = can_restart
+    if can_restart:
+        print(f"Camera DEBUG port found ({usb_disk.debug_port()}): take a photo, then click 'Read bin' on the page"
+              + (f" (or wait: checking every {every:.0f} s)." if every else "."))
+        read_requested.set()  # index the photos already on the card
+    else:
+        print("Take a photo, then unplug and replug the camera's USB 2.0 cable. (Plug in the DEBUG cable too "
+              "and restart this script to skip the replug.)")
+    print("Ctrl+C to stop.", flush=True)
+
     was_loaded = False
+    next_auto = time.monotonic() + every if every else None
     try:
         while True:
+            if can_restart and not usb_disk.is_loaded():
+                due = next_auto is not None and time.monotonic() >= next_auto
+                if read_requested.is_set() or due:
+                    read_requested.clear()
+                    set_state("fetching", "getting the photo from the camera")
+                    if not usb_disk.restart_camera():
+                        print("  the camera did not come back after a restart (is it switched on?)", flush=True)
+                        set_state("error", "camera did not respond")
+                    if every:
+                        next_auto = time.monotonic() + every
             loaded = usb_disk.is_loaded()
             if loaded and not was_loaded:
                 time.sleep(1.0)  # let Windows finish mounting the card
@@ -217,18 +253,25 @@ def watch(bin_id: str, provider: str) -> None:
                     print(f"  camera card has {len(photos)} photo(s) already; waiting for a new one")
                     fresh = []
                 first_pass = False
-                for photo in fresh[-1:]:  # only the newest: one reading per replug
-                    local = CAPTURES / f"{dt.datetime.now():%H%M%S}_{photo.name}"
-                    shutil.copy2(photo, local)
+                local = None
+                if fresh:  # only the newest: one reading per fetch
+                    local = CAPTURES / f"{dt.datetime.now():%H%M%S}_{fresh[-1].name}"
+                    shutil.copy2(fresh[-1], local)
+                usb_disk.eject()  # give the camera back before the slow AI call
+                if local is None:
+                    set_state("idle", "no new photo on the camera")
+                else:
+                    set_state("analyzing", "estimating the fill level")
                     try:
                         read_photo(local, bin_id, provider)
+                        set_state("idle", "")
                     except Exception as ex:  # noqa: BLE001 - keep watching
-                        print(f"  {photo.name}: reading failed: {ex}", flush=True)
-                usb_disk.eject()
+                        print(f"  {local.name}: reading failed: {ex}", flush=True)
+                        set_state("error", "the AI estimate failed")
                 print("  camera released: ready for the next photo", flush=True)
                 loaded = usb_disk.is_loaded()
             was_loaded = loaded
-            time.sleep(0.5)
+            time.sleep(0.3)
     except KeyboardInterrupt:
         print()
 
@@ -249,7 +292,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
     def do_GET(self) -> None:  # noqa: N802 - http.server's naming
         path = self.path.split("?")[0]
-        if path == "/api/latest":
+        if path == "/api/status":
+            self._send(json.dumps(STATE).encode(), "application/json")
+        elif path == "/api/latest":
             body = LATEST.read_bytes() if LATEST.exists() else b"null"
             self._send(body, "application/json")
         elif path == "/api/history":
@@ -260,6 +305,21 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self._send((WEB / "index.html").read_bytes(), "text/html; charset=utf-8")
         else:
             self._send(b"not found", "text/plain", 404)
+
+
+    def do_POST(self) -> None:  # noqa: N802
+        if self.path.split("?")[0] == "/api/read":
+            read_requested.set()
+            self._send(json.dumps({"requested": True, "auto": STATE["auto"]}).encode(), "application/json")
+        else:
+            self._send(b"not found", "text/plain", 404)
+
+    def do_OPTIONS(self) -> None:  # noqa: N802 - CORS preflight for the frontend
+        self.send_response(204)
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.end_headers()
 
 
 def serve(block: bool) -> None:
@@ -280,6 +340,8 @@ def main() -> None:
     parser.add_argument("value", nargs="?", help="photo path (photo mode) or a percentage (set mode)")
     parser.add_argument("--bin", default="BIN_001", help="bin_id this sensor reports as (default BIN_001)")
     parser.add_argument("--provider", choices=["auto", "gemini", "nvidia"], default="auto")
+    parser.add_argument("--every", type=float, metavar="SECONDS",
+                        help="watch mode: also fetch new photos automatically at this interval (needs the DEBUG cable)")
     args = parser.parse_args()
 
     try:
@@ -290,6 +352,7 @@ def main() -> None:
         pass
 
     if args.mode == "serve":
+        set_state("idle", "")
         serve(block=True)
     elif args.mode == "set":
         row = record(args.bin, max(0, min(100, int(args.value))), {"source": "manual", "reason": "set by hand"}, None)
@@ -298,7 +361,7 @@ def main() -> None:
         read_photo(pathlib.Path(args.value), args.bin, args.provider)
     else:
         serve(block=False)
-        watch(args.bin, args.provider)
+        watch(args.bin, args.provider, args.every)
 
 
 if __name__ == "__main__":

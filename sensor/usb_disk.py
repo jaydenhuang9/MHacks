@@ -6,7 +6,8 @@ thing as "Eject" in Explorer) gives the camera back; loading it again brings the
 
     python sensor/usb_disk.py status
     python sensor/usb_disk.py eject     # camera can shoot
-    python sensor/usb_disk.py load      # laptop can read the photos
+    python sensor/usb_disk.py load      # ask for the card back (the stock firmware refuses)
+    python sensor/usb_disk.py restart   # restart the camera via its DEBUG port: card comes back
 """
 
 from __future__ import annotations
@@ -81,6 +82,44 @@ def load(timeout: float = 8.0) -> bool:
     return False
 
 
+def debug_port() -> str | None:
+    """The COM port of the camera's DEBUG socket (Espressif USB JTAG/serial unit), if connected."""
+    from serial.tools import list_ports
+
+    for port in list_ports.comports():
+        if (port.vid, port.pid) == (0x303A, 0x1001):
+            return port.device
+    return None
+
+
+def restart_camera(timeout: float = 15.0) -> bool:
+    """Restart the camera through its DEBUG port so its card shows up on the laptop again.
+
+    This replaces unplugging and replugging the USB 2.0 cable: after a restart with that cable
+    connected, the stock firmware goes straight into USB disk mode. Needs both cables plugged in.
+    Returns True once the photo folder is readable.
+    """
+    import serial
+
+    port = debug_port()
+    if port is None:
+        return False
+    # The DEBUG port resets the chip when RTS is asserted while DTR is released. Windows only
+    # sends the DTR state along with an RTS change, so DTR must be cleared first, then RTS set.
+    with serial.Serial(port, 115200) as link:
+        link.dtr = False
+        link.rts = True
+        time.sleep(0.2)
+        link.rts = False
+        time.sleep(0.1)
+    end = time.monotonic() + timeout
+    while time.monotonic() < end:
+        if is_loaded():
+            return True
+        time.sleep(0.25)
+    return False
+
+
 def photos() -> list[pathlib.Path]:
     return sorted((p for p in PHOTO_DIR.iterdir() if p.is_file()), key=lambda p: p.stat().st_mtime)
 
@@ -91,6 +130,10 @@ if __name__ == "__main__":
         eject()
     elif action == "load":
         print("loaded" if load() else "NOT loaded (the camera did not give the card back)")
+    elif action == "restart":
+        started = time.monotonic()
+        print(f"DEBUG port: {debug_port()}")
+        print(f"card back after {time.monotonic() - started:.1f} s" if restart_camera() else "card did NOT come back")
     print("state:", "USB disk (laptop can read photos)" if is_loaded() else "camera (laptop cannot see the card)")
     if is_loaded():
         for photo in photos()[-10:]:

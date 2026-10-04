@@ -2,3 +2,4 @@ google-genai>=1.50,<1.67
 python-dotenv>=1.0
 pillow>=10
 requests>=2.31
+pyserial>=3.5
