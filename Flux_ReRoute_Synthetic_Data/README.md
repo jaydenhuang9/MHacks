@@ -68,29 +68,14 @@ FLUX creates a digital representation of campus waste infrastructure.
 The system combines:
 
 ```text
-Bin Data
-   +
-Telemetry
-   +
-Truck Locations
-   +
-Collection Stations
-   +
-Routing
-        ↓
-     FLUX
-        ↓
-Optimized Collection
+![Uploading image.png…]()
+
 ```
 # How to Run FLUX
 
 ## 1. Download the Project
 
 Clone the repository:
-
-bash
-git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY.git
-cd FLUX
 
 Or download the repository as a ZIP file and extract it.
 
