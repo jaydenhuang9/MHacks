@@ -2162,6 +2162,26 @@ $("baselineBtn").addEventListener("click", toggleBaselineRoutes);
    34. START APPLICATION
 ========================================================= */
 
-update();
+async function loadDefaultData() {
+    const names = ["bins", "stations", "trucks"];
+
+    const files = await Promise.all(
+        names.map(async name => {
+            const res = await fetch(`data/${name}.csv`);
+            if (!res.ok) throw new Error(`${name}.csv not found`);
+            const text = await res.text();
+            return { text: async () => text };   // looks like a File to handleFiles
+        })
+    );
+
+    await handleFiles(files);   // your existing detection + loaders + update()
+    toast("Upload telemetry to see bin fill levels.");
+}
+
+loadDefaultData().catch(err => {
+    console.error(err);
+    toast("Could not load default data — upload CSV files instead.");
+    update();
+});
 
 console.log("Campus Bin Map loaded.");
