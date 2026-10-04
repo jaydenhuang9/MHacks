@@ -133,11 +133,42 @@ Your browser should automatically open FLUX.
 
 ## 5. Running Data
 
-When on the map page click on the upload files and upload:
+On the map page, click **Upload Files** and select:
 
 ```text
-bins.csv
 telemetry.csv
-stations.csv
-trucks.csv
 ```
+
+For the demo, we generated 5 days of fill-level readings for bins across campus.
+
+### Using your own data
+
+FLUX works with any CSV that follows the same format as `telemetry.csv`. To use your own:
+
+1. Make a CSV with these columns (the header row must match exactly):
+
+```text
+   timestamp,bin_id,fill_level
+   2025-01-15 08:00,BIN_001,42
+   2025-01-15 09:00,BIN_001,47
+```
+
+   - `timestamp`: when the reading was taken
+   - `bin_id`: must match a bin ID in `data/bins.csv`
+   - `fill_level`: how full the bin is (0-100%)
+
+2. If you are adding new bins, also add them to `bins.csv` with their location so they appear on the map.
+3. Click **Upload Files** on the map page and select your CSV.
+
+Any list of bins works, whether it's a campus, a city, or a single building, as long as each bin has an ID, a location, and readings over time.
+
+### Where the data comes from in the real world
+
+The CSV upload is a stand-in for live data. Our goal is to put low-cost sensors in trash bins that measure fill level and send readings automatically:
+
+1. **Sensor:** an ultrasonic sensor inside the lid measures the distance to the trash and converts it to a fill percentage.
+2. **Connectivity:** a small microcontroller sends the reading over Wi-Fi or a low-power network (such as LoRaWAN or cellular).
+3. **Backend:** the reading is sent to the FLUX server, which stores it in the same format as `telemetry.csv`.
+4. **Dashboard:** the map updates as new readings arrive, and FLUX uses them to flag full bins and re-route trucks.
+
+The app reads the same data format either way, so switching from uploaded CSVs to live sensors only changes how the data arrives, not how FLUX uses it.
