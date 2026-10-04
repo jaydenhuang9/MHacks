@@ -81,3 +81,13 @@ Routing
      FLUX
         ↓
 Optimized Collection
+
+# How to Run FLUX
+
+## 1. Download the Project
+
+Clone the repository:
+
+```bash
+git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY.git
+cd FLUX
