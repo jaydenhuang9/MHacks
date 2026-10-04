@@ -22,6 +22,20 @@ sensor\.venv\Scripts\python.exe -m pip install -r sensor\requirements.txt
 - The flashing tool is in `C:\Users\yk101\MHacks-2026\.tools` (`fwogcli.exe`); firmware notes are
   in that repo's `CLAUDE.md`.
 
+## The camera in hand
+A stock Espressif **ESP32-P4-EYE in its case**: two USB-C ports ("USB 2.0" and "DEBUG"), manual
+focus lens, flash LED, tripod thread. There is **no WILEye Orca adapter** with it, so nothing
+mates with the FREE-WILi header.
+
+Tried (Sun ~2:30 AM): laptop -> FREE-WILi FW5171, Bottlenose Orca on the 20-pin header,
+USB-C to USB-C from the Bottlenose to the camera. Result: the laptop sees only the FREE-WILi,
+no camera and no drive; the FREE-WILi's I2C scan is empty; `wileye_take_picture` returns
+`Failed`. Expected: every USB-C port in that chain is a USB *device* port, so there is no host
+for the camera, and the FREE-WILi's camera link is UART on header pins, not USB.
+
+Next: plug the camera's "USB 2.0" port straight into the laptop and see whether it shows up
+as a webcam or as a USB drive.
+
 ## WILEye wiring (FREE-WILi 20-pin header)
 The WILEye talks to the FREE-WILi over UART1 at 5 Mbps with hardware flow control.
 | FREE-WILi header pin | Signal | ESP32-P4-EYE |
