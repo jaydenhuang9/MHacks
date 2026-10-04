@@ -33,8 +33,22 @@ no camera and no drive; the FREE-WILi's I2C scan is empty; `wileye_take_picture`
 `Failed`. Expected: every USB-C port in that chain is a USB *device* port, so there is no host
 for the camera, and the FREE-WILi's camera link is UART on header pins, not USB.
 
-Next: plug the camera's "USB 2.0" port straight into the laptop and see whether it shows up
-as a webcam or as a USB drive.
+### How the camera behaves on the laptop (measured Sun ~3 AM)
+- Power switch must be on **I**. It runs Espressif's stock camera firmware.
+- **"USB 2.0" port -> laptop:** the camera's card appears as a 2 GB FAT drive (`D:`, "ESP Mass
+  Storage", VID 303A PID 4002) with photos in `D:\esp32_p4_pic_save`. While the drive is loaded the
+  camera shows "functions are disabled in USB disk mode" and will not shoot.
+- **Eject from the laptop** (`python sensor/usb_disk.py eject`) gives the camera back on the same
+  cable: live view returns and the shutter works.
+- **Getting the drive back needs a replug.** Asking the camera to load the card again
+  (`IOCTL_STORAGE_LOAD_MEDIA`) fails with "device not ready", and re-enumerating the USB device
+  from software needs administrator rights, which this session does not have.
+- **"DEBUG" port -> laptop:** the camera works normally (power only, as far as the camera is
+  concerned); the laptop gets a programming/log port, not the photos.
+- The camera has an interval (time-lapse) mode in its menu, not yet tried.
+
+So one reading is: eject -> take a photo (shutter or interval mode) -> replug the USB 2.0 cable
+-> read the newest file in `esp32_p4_pic_save`.
 
 ## WILEye wiring (FREE-WILi 20-pin header)
 The WILEye talks to the FREE-WILi over UART1 at 5 Mbps with hardware flow control.
