@@ -81,13 +81,53 @@ Routing
      FLUX
         ↓
 Optimized Collection
-
+```
 # How to Run FLUX
 
 ## 1. Download the Project
 
 Clone the repository:
 
-```bash
+bash
 git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY.git
 cd FLUX
+
+Or download the repository as a ZIP file and extract it.
+
+## 2. Open the Project in VS Code
+
+Open the `FLUX` folder in Visual Studio Code.
+
+Your project should contain:
+
+```text
+FLUX/
+├── homepage.html
+├── homepage.css
+├── homepage.js
+├── map.html
+├── map.css
+├── map.js
+├── bins.csv
+├── telemetry.csv
+├── stations.csv
+└── trucks.csv
+```
+
+## 3. Install Live Server
+
+In VS Code:
+
+1. Open the **Extensions** tab.
+2. Search for **Live Server**.
+3. Install **Live Server** by Ritwick Dey.
+
+## 4. Start FLUX
+
+Open `homepage.html`.
+
+Right-click inside the file and select:
+
+**Open with Live Server**
+
+Your browser should automatically open FLUX.
