@@ -105,7 +105,8 @@
         $("reason").textContent = latest.reason || "";
         $("bin").textContent = latest.bin_id;
         $("when").textContent = "last reading " + latest.timestamp;
-        const tags = [latest.source === "manual" ? "manual reading" : "camera reading"];
+        const sources = { manual: "manual reading", demo_photo: "stored photo, replayed", camera: "live camera photo" };
+        const tags = [sources[latest.source] || "camera reading"];
         if (latest.confidence) tags.push(latest.confidence + " confidence");
         if (latest.ai_model) tags.push(latest.ai_model);
         $("tags").replaceChildren(...tags.map((t) => {
@@ -147,7 +148,7 @@
       $("read").disabled = busy || !s.auto;
       $("state").textContent = !s.auto
         ? "Take a photo, then replug the camera's USB 2.0 cable (plug in the DEBUG cable to use this button)."
-        : (labels[s.state] || "") || s.message || "Take a photo with the camera, then press Read bin.";
+        : (labels[s.state] || "") || s.message || "Press Read bin for the next reading.";
     } catch (error) { /* refresh() reports the sensor being offline */ }
   }
 

@@ -1,7 +1,10 @@
 """A real bin sensor: camera photo -> AI fill estimate -> telemetry row + live web page.
 
-    python sensor/bin_sensor.py watch              # live: every new camera photo becomes a reading
-    python sensor/bin_sensor.py watch --every 20   # also fetch new photos by itself every 20 s
+    python sensor/bin_sensor.py demo               # NO camera needed: replays the stored bin photos
+    python sensor/bin_sensor.py demo --every 30    # ... a new reading every 30 s, like a deployed bin
+    python sensor/bin_sensor.py watch              # live camera (Windows): each new photo is a reading
+    python sensor/bin_sensor.py watch --every 20   # ... and fetch new photos by itself every 20 s
+    python sensor/bin_sensor.py add-demo x.jpg 03_full   # store a photo (and its AI result) for demo mode
     python sensor/bin_sensor.py photo some.jpg     # one reading from a photo file
     python sensor/bin_sensor.py set 80             # a manual reading (for demos; marked as manual)
     python sensor/bin_sensor.py serve              # only the web page / API
@@ -39,9 +42,11 @@ import time
 HERE = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-import usb_disk  # noqa: E402
+usb_disk = None  # the camera's USB drive control (Windows only); imported by watch()
 
 CAPTURES = HERE / "captures"
+DEMO_PHOTOS = HERE / "demo_photos"
+DEMO_READINGS = DEMO_PHOTOS / "readings.json"
 DATA = HERE / "data"
 WEB = HERE / "web"
 TELEMETRY = DATA / "live_telemetry.csv"
@@ -168,7 +173,8 @@ def record(bin_id: str, fill_pct: int, extra: dict, photo: pathlib.Path | None) 
         hours = (now - dt.datetime.fromisoformat(earlier[-1]["timestamp"])).total_seconds() / 3600
         change = fill_pct - float(earlier[-1]["fill_pct"])
         collected = change <= -30  # a big drop means the bin was emptied
-        rate = 0.0 if collected or hours <= 0 else round(change / hours, 3)
+        # readings less than a minute apart (demos, retries) say nothing about the fill rate
+        rate = 0.0 if collected or hours < 1 / 60 else round(change / hours, 3)
     row = {
         "timestamp": now.isoformat(sep=" "), "bin_id": bin_id, "fill_pct": fill_pct,
         "fill_rate_pct_per_hr": rate, "temperature_c_synthetic": "", "precipitation_mm_synthetic": "",
@@ -190,22 +196,95 @@ def record(bin_id: str, fill_pct: int, extra: dict, photo: pathlib.Path | None) 
 
 
 # ---------------------------------------------------------------- one reading
-def read_photo(photo: pathlib.Path, bin_id: str, provider: str = "auto") -> None:
+def read_photo(photo: pathlib.Path, bin_id: str, provider: str = "auto", source: str = "camera",
+               cached: dict | None = None) -> dict | None:
+    """One reading from one photo. `cached` is a stored AI result to use if no AI can be reached."""
     started = time.monotonic()
-    estimate = estimate_fill(photo, provider)
+    try:
+        if provider == "stored":
+            raise RuntimeError("--provider stored: not calling any AI")
+        estimate = estimate_fill(photo, provider)
+    except Exception as ex:  # noqa: BLE001
+        if cached is None:
+            raise
+        print(f"  (live AI unavailable, using the stored result for this photo: {str(ex)[:120]})")
+        estimate = {**cached, "provider": "stored", "model": cached.get("model", "stored result")}
     seconds = time.monotonic() - started
-    source = f"{estimate['provider']} {estimate['model']}"
+    label = f"{estimate['provider']} {estimate['model']}"
     if not estimate["is_bin"]:
-        print(f"  {photo.name}: not a bin ({estimate.get('reason')}) [{source}, {seconds:.1f} s]", flush=True)
-        return
+        print(f"  {photo.name}: not a bin ({estimate.get('reason')}) [{label}, {seconds:.1f} s]", flush=True)
+        return None
     row = record(bin_id, estimate["fill_pct"], {
-        "source": "camera", "confidence": estimate.get("confidence"), "reason": estimate.get("reason"),
+        "source": source, "confidence": estimate.get("confidence"), "reason": estimate.get("reason"),
         "ai_provider": estimate["provider"], "ai_model": estimate["model"], "photo": photo.name,
     }, photo)
-    print(f"  {photo.name}: {row['fill_pct']}% full ({estimate.get('confidence')} confidence) [{source}, {seconds:.1f} s]")
+    print(f"  {photo.name}: {row['fill_pct']}% full ({estimate.get('confidence')} confidence) [{label}, {seconds:.1f} s]")
     print(f"    why: {estimate.get('reason')}")
     print(f"    saved: {row['timestamp']} {bin_id} rate {row['fill_rate_pct_per_hr']} %/h"
           f"{'  (bin was emptied)' if row['collection_occurred'] else ''}", flush=True)
+    return estimate
+
+
+# ---------------------------------------------------------------- demo mode (no camera)
+def demo_photos() -> list[pathlib.Path]:
+    return sorted(DEMO_PHOTOS.glob("*.jpg"))
+
+
+def stored_readings() -> dict:
+    return json.loads(DEMO_READINGS.read_text()) if DEMO_READINGS.exists() else {}
+
+
+def add_demo(photo: pathlib.Path, name: str, provider: str) -> None:
+    """Copy a photo into demo_photos/ (shrunk) and store its AI result, so demo mode can replay it."""
+    DEMO_PHOTOS.mkdir(exist_ok=True)
+    target = DEMO_PHOTOS / f"{name}.jpg"
+    target.write_bytes(small_jpeg(photo, longest=1280))
+    estimate = estimate_fill(target, provider)
+    readings = stored_readings()
+    readings[target.name] = {k: estimate[k] for k in ("is_bin", "fill_pct", "confidence", "reason", "model")}
+    DEMO_READINGS.write_text(json.dumps(readings, indent=2) + "\n")
+    print(f"stored {target.name}: {estimate['fill_pct']}% full ({estimate['confidence']}): {estimate['reason']}")
+
+
+def demo(bin_id: str, provider: str, every: float | None) -> None:
+    """Replay the stored bin photos through the same pipeline as the live camera.
+
+    Each "Read bin" click (or each `every` seconds) takes the next photo in demo_photos/, in
+    file-name order, and sends it to the AI exactly as a fresh camera photo would be. Without an
+    API key or internet it uses the AI result stored with the photo, so the demo cannot fail.
+    """
+    photos = demo_photos()
+    if not photos:
+        sys.exit(f"No photos in {DEMO_PHOTOS}. Add some with: bin_sensor.py add-demo photo.jpg 01_name")
+    readings = stored_readings()
+    STATE["auto"] = True
+    print(f"Demo mode: {len(photos)} stored photo(s): {', '.join(p.name for p in photos)}")
+    print("Click 'Read bin' on the page for the next reading" + (f", or wait {every:.0f} s." if every else "."))
+    print("Ctrl+C to stop.", flush=True)
+    set_state("idle", "")
+    index = 0
+    next_auto = time.monotonic() + every if every else None
+    try:
+        while True:
+            due = next_auto is not None and time.monotonic() >= next_auto
+            if read_requested.is_set() or due:
+                read_requested.clear()
+                photo = photos[index % len(photos)]
+                index += 1
+                set_state("fetching", "getting the photo from the camera")
+                time.sleep(1.0)
+                set_state("analyzing", "estimating the fill level")
+                try:
+                    read_photo(photo, bin_id, provider, source="demo_photo", cached=readings.get(photo.name))
+                    set_state("idle", "")
+                except Exception as ex:  # noqa: BLE001 - keep the demo alive
+                    print(f"  {photo.name}: reading failed: {ex}", flush=True)
+                    set_state("error", "the AI estimate failed")
+                if every:
+                    next_auto = time.monotonic() + every
+            time.sleep(0.2)
+    except KeyboardInterrupt:
+        print()
 
 
 def watch(bin_id: str, provider: str, every: float | None) -> None:
@@ -215,6 +294,12 @@ def watch(bin_id: str, provider: str, every: float | None) -> None:
     or (with the DEBUG cable also connected) this script restarts the camera itself, on a
     "Read bin" click from the web page or every `every` seconds.
     """
+    global usb_disk
+    if sys.platform != "win32":
+        sys.exit("Live camera mode only runs on Windows (it controls the camera's USB drive). "
+                 "Use `demo` mode here: python sensor/bin_sensor.py demo")
+    import usb_disk  # noqa: PLW0603
+
     CAPTURES.mkdir(exist_ok=True)
     seen: set[str] = set()
     first_pass = True
@@ -322,9 +407,9 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
 
 
-def serve(block: bool) -> None:
-    server = http.server.ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
-    print(f"Live page: http://localhost:{PORT}/   API: http://localhost:{PORT}/api/latest", flush=True)
+def serve(block: bool, port: int = PORT) -> None:
+    server = http.server.ThreadingHTTPServer(("127.0.0.1", port), Handler)
+    print(f"Live page: http://localhost:{port}/   API: http://localhost:{port}/api/latest", flush=True)
     if block:
         try:
             server.serve_forever()
@@ -336,12 +421,15 @@ def serve(block: bool) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Bin fill sensor: ESP32-P4-EYE camera + AI vision.")
-    parser.add_argument("mode", choices=["watch", "photo", "set", "serve"])
-    parser.add_argument("value", nargs="?", help="photo path (photo mode) or a percentage (set mode)")
+    parser.add_argument("mode", choices=["demo", "watch", "photo", "set", "serve", "add-demo"])
+    parser.add_argument("value", nargs="?", help="photo path (photo / add-demo) or a percentage (set)")
+    parser.add_argument("name", nargs="?", help="add-demo: name for the stored photo, e.g. 03_full")
     parser.add_argument("--bin", default="BIN_001", help="bin_id this sensor reports as (default BIN_001)")
-    parser.add_argument("--provider", choices=["auto", "gemini", "nvidia"], default="auto")
+    parser.add_argument("--provider", choices=["auto", "gemini", "nvidia", "stored"], default="auto",
+                        help="which AI estimates the fill; 'stored' (demo mode) replays saved results with no AI call")
+    parser.add_argument("--port", type=int, default=PORT, help=f"web page / API port (default {PORT})")
     parser.add_argument("--every", type=float, metavar="SECONDS",
-                        help="watch mode: also fetch new photos automatically at this interval (needs the DEBUG cable)")
+                        help="demo / watch: take a new reading automatically at this interval")
     args = parser.parse_args()
 
     try:
@@ -353,14 +441,19 @@ def main() -> None:
 
     if args.mode == "serve":
         set_state("idle", "")
-        serve(block=True)
+        serve(block=True, port=args.port)
     elif args.mode == "set":
         row = record(args.bin, max(0, min(100, int(args.value))), {"source": "manual", "reason": "set by hand"}, None)
         print(f"manual reading saved: {row['timestamp']} {args.bin} {row['fill_pct']}%")
+    elif args.mode == "add-demo":
+        add_demo(pathlib.Path(args.value), args.name or pathlib.Path(args.value).stem, args.provider)
+    elif args.mode == "demo":
+        serve(block=False, port=args.port)
+        demo(args.bin, args.provider, args.every)
     elif args.mode == "photo":
         read_photo(pathlib.Path(args.value), args.bin, args.provider)
     else:
-        serve(block=False)
+        serve(block=False, port=args.port)
         watch(args.bin, args.provider, args.every)
 
 
