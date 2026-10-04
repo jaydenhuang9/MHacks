@@ -33,6 +33,9 @@ const LEVEL_COLOR = {
 const DEFAULT_MPG = 3;
 const MAX_ROUTES = 6;
 
+/* Emissions: EPA estimate for burning one gallon of diesel. */
+const CO2_LB_PER_GALLON = 22.45;
+
 /* =========================================================
    2. APPLICATION DATA
 ========================================================= */
@@ -570,6 +573,20 @@ function getNextRouteNumber() {
     }
 
     return null;
+}
+
+/* Convert gallons of diesel into pounds of CO2. */
+function co2FromFuel(gallons) {
+    return gallons * CO2_LB_PER_GALLON;
+}
+
+/* Show small amounts as lb and large amounts as short tons. */
+function formatCO2(lb) {
+    if (lb >= 2000) {
+        return `${(lb / 2000).toFixed(2)} tons`;
+    }
+
+    return `${lb.toFixed(1)} lb`;
 }
 
 /* =========================================================
@@ -1232,6 +1249,8 @@ function renderCreatedRoutes() {
                     ${route.milesSaved.toFixed(2)} mi
                     /
                     ${route.fuelSaved.toFixed(2)} gal
+                    /
+                    ${formatCO2(co2FromFuel(route.fuelSaved))} CO₂
                 </div>
 
                 <!-- Only show bin counts. No truck IDs. -->
@@ -1325,6 +1344,8 @@ function renderPickupEfficiency() {
         baseline.fuel - totalOptimizedFuel
     );
 
+    const co2SavedLb = co2FromFuel(fuelSaved);
+
     const efficiency = baseline.miles > 0
         ? (milesSaved / baseline.miles) * 100
         : 0;
@@ -1357,11 +1378,22 @@ function renderPickupEfficiency() {
                 <strong>${fuelSaved.toFixed(2)} gal</strong>
             </div>
 
+            <div class="efficiency-card">
+                <span>CO₂ Avoided</span>
+                <strong>${formatCO2(co2SavedLb)}</strong>
+            </div>
+
             <div class="efficiency-card efficiency-main">
                 <span>Pickup Efficiency</span>
                 <strong>${efficiency.toFixed(1)}%</strong>
             </div>
 
+        </div>
+
+        <div class="reason">
+            CO₂ estimated from diesel burned
+            (${CO2_LB_PER_GALLON} lb per gallon).
+            Simulated estimate.
         </div>
     `;
 }
