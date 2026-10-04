@@ -1,24 +1,83 @@
-# Flux / ReRoute Synthetic Data Pack
+# FLUX
 
-Purpose: MHacks prototype data for a campus waste-collection digital twin.
+## Infrastructure that adapts.
 
-FILES
-- bins.csv: simulated smart-bin registry on approximate Ann Arbor/UM campus geography.
-- telemetry_hourly.csv: 180 days of hourly synthetic bin telemetry.
-- events.csv: synthetic operational event scenarios used to create demand spikes.
-- collections.csv: collection events derived from simulated fill behavior.
-- model_training.csv: feature table with a 6-hour future-fill regression target and overflow classification target.
+FLUX is a campus waste-management digital twin designed to help campus waste systems adapt before problems happen.
 
-IMPORTANT
-- Bin locations, bin telemetry, event attendance, collections, and synthetic weather columns are simulated.
-- Replace temperature_c_synthetic and precipitation_mm_synthetic with real Open-Meteo historical weather before final model training if time allows.
-- Replace synthetic event scenarios with official event schedule fields for live/demo enrichment.
-- Do not claim this is University of Michigan operational or sensor data.
-- Coordinates are approximate prototype locations, not actual waste-bin locations.
+Instead of relying entirely on fixed garbage-collection schedules, FLUX uses simulated waste-bin telemetry to identify which bins need attention and helps optimize collection routes.
 
-RECOMMENDED MODEL TARGET
-Regression: fill_pct_6h_later
-Optional classification: overflow_within_6h
+---
 
-RECOMMENDED JOIN KEY
-bin_id
+## What FLUX Does
+
+FLUX combines campus waste data, mapping, and route optimization into one interactive system.
+
+### Key Features
+
+- 🗺️ Interactive campus waste map
+- 🗑️ Real-time-style bin fill visualization
+- 🚛 Garbage truck visualization
+- 📍 Collection station visualization
+- 📊 Historical bin telemetry
+- 🔴 High-priority pickup identification
+- 🛣️ Road-following pickup routes
+- 🚛 Multi-truck route optimization
+- 📋 Multiple saved pickup routes
+- 📈 Pickup efficiency comparison
+- ⛽ Estimated fuel savings
+- 🌱 Sustainability-focused infrastructure planning
+
+---
+
+# The Problem
+
+Campus waste collection is often based on fixed schedules.
+
+For example:
+
+> "Every truck visits every bin every Tuesday."
+
+But waste generation isn't uniform.
+
+Some bins fill much faster than others, while other bins may still have plenty of capacity.
+
+This can result in:
+
+- Unnecessary truck trips
+- Unnecessary fuel consumption
+- Increased mileage
+- Inefficient use of collection crews
+- Overflowing bins in high-traffic areas
+
+FLUX approaches the problem differently.
+
+Instead of asking:
+
+> "Which bins do we normally collect?"
+
+FLUX asks:
+
+> "Which bins actually need attention right now?"
+
+---
+
+# Our Solution
+
+FLUX creates a digital representation of campus waste infrastructure.
+
+The system combines:
+
+```text
+Bin Data
+   +
+Telemetry
+   +
+Truck Locations
+   +
+Collection Stations
+   +
+Routing
+        ↓
+     FLUX
+        ↓
+Optimized Collection
