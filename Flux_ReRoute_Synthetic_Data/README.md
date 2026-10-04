@@ -68,7 +68,21 @@ FLUX creates a digital representation of campus waste infrastructure.
 The system combines:
 
 ```text
-![Uploading image.png…]()
+Bin Data
+   +
+Telemetry
+   +
+Truck Locations
+   +
+Collection Stations
+   +
+Road Routing
+        ↓
+      FLUX
+        ↓
+Optimized Collection Routes
+        ↓
+Less Mileage + Less Fuel + Fewer Unnecessary Trips
 
 ```
 # How to Run FLUX
