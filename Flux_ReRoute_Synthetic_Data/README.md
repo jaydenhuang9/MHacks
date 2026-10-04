@@ -130,3 +130,14 @@ Right-click inside the file and select:
 **Open with Live Server**
 
 Your browser should automatically open FLUX.
+
+## 5. Running Data
+
+When on the map page click on the upload files and upload:
+
+```text
+bins.csv
+telemetry.csv
+stations.csv
+trucks.csv
+```
