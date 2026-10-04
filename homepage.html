@@ -2,37 +2,1087 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flux</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+    <title>FLUX · Infrastructure that adapts</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&display=swap"
+        rel="stylesheet">
+
     <link rel="stylesheet" href="homepage.css">
 </head>
 
 <body>
 
-    <header class="navbar">
-        <nav>
-            <a href="#">Home</a>
-            <a href="#">About</a>
-            <a href="#">Features</a>
-            <a href="#">Contact</a>
-        </nav>
+    <!-- SVG ICONS -->
+    <svg width="0" height="0" style="position:absolute">
+        <defs>
 
-        <button class="nav-button"> Get Started </button>
-    </header>
+            <symbol id="lf" viewBox="0 0 24 24">
+                <path d="M20 4C9 4 4 9 4 17c8 0 16-3 16-13Z" fill="currentColor" />
+            </symbol>
+
+            <symbol id="fw" viewBox="0 0 40 40">
+                <g fill="currentColor">
+                    <circle cx="20" cy="9" r="7" />
+                    <circle cx="31" cy="17" r="7" />
+                    <circle cx="27" cy="30" r="7" />
+                    <circle cx="13" cy="30" r="7" />
+                    <circle cx="9" cy="17" r="7" />
+                </g>
+
+                <circle cx="20" cy="20" r="4.5" fill="var(--amber)" />
+            </symbol>
+
+        </defs>
+    </svg>
 
 
-    <div class="sub-content">
-        <h1>
-            FLUX
-        </h1>
-        <p class="tagline"> Move with the flow. </p>
-        <p class="description"> Flux is a modern platform designed to help you discover, create, and connect in one
-            seamless experience. </p>
-        <div class="buttons">
-            <button class="primary-button"> Get Started </button>
-            <button class="secondary-button"> Learn More </button>
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+        Tool link coming soon
+    </div>
+
+
+    <!-- NAVIGATION -->
+    <div class="nav">
+
+        <div class="w">
+
+            <a class="logo" href="#top">
+
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+
+                    <path d="M20 4C9 4 4 9 4 17c8 0 16-3 16-13ZM4 20c3-6 7-9 11-11" />
+
+                </svg>
+
+                Flux
+
+            </a>
+
+
+            <nav>
+
+                <a href="#mission">Mission</a>
+
+                <a href="#problem">Problem</a>
+
+                <a href="#how">How it works</a>
+
+                <a href="#impact">Impact</a>
+
+                <a href="#team">Team</a>
+
+                <a href="#faq">FAQ</a>
+
+                <a class="btn pill" href="#" data-tool>
+                    Open the tool
+                </a>
+
+            </nav>
+
         </div>
+
+    </div>
+
+
+    <!-- SIMULATION NOTICE -->
+    <div class="disc">
+        <i></i>
+        Simulated network on campus geography · synthetic data
+    </div>
+
+
+    <!-- HERO -->
+    <section class="hero" id="top">
+
+        <div class="w">
+
+            <svg class="leaf" style="left:8%;top:24%" width="46" height="46">
+
+                <use href="#lf"></use>
+
+            </svg>
+
+
+            <svg class="leaf" style="right:10%;top:30%;animation-delay:-3s" width="34" height="34">
+
+                <use href="#lf"></use>
+
+            </svg>
+
+
+            <svg class="leaf" style="right:22%;top:68%;animation-delay:-6s" width="28" height="28">
+
+                <use href="#lf"></use>
+
+            </svg>
+
+
+            <span class="m rv in">
+                MHacks 2026 · Sustainability Track · Ann Arbor
+            </span>
+
+
+            <h1 class="rv in">
+                Flu<em>x</em>
+            </h1>
+
+
+            <p class="tag rv in">
+                Infrastructure that adapts.
+            </p>
+
+
+            <p class="rv in">
+                A digital twin that helps campus waste systems adapt before problems happen.
+            </p>
+
+
+            <div class="bt rv in">
+
+                <a class="btn go" href="#" data-tool>
+                    Launch the tool →
+                </a>
+
+                <a class="btn" href="#mission">
+                    Our mission ↓
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- HILLS -->
+        <svg class="hills" viewBox="0 0 1440 220" preserveAspectRatio="none">
+
+            <circle cx="1180" cy="60" r="44" fill="var(--amber)" opacity=".35" />
+
+            <path d="M0 120C240 40 420 160 720 100S1180 40 1440 110V220H0Z" fill="var(--m1)" opacity=".6" />
+
+            <path d="M0 160C300 100 520 200 820 150S1260 110 1440 160V220H0Z" fill="var(--leaf)" opacity=".5" />
+
+            <path d="M0 200C360 160 620 220 960 190S1300 170 1440 200V220H0Z" fill="var(--bg)" />
+
+        </svg>
+
+    </section>
+
+
+    <!-- MOVING TEXT -->
+    <div class="mq" aria-hidden="true">
+
+        <div>
+
+            <b>Predict</b>
+            <span>❀</span>
+
+            <b>Simulate</b>
+            <span>❀</span>
+
+            <b>Optimize</b>
+            <span>❀</span>
+
+            <b>Adapt</b>
+            <span>❀</span>
+
+            <b>Predict</b>
+            <span>❀</span>
+
+            <b>Simulate</b>
+            <span>❀</span>
+
+            <b>Optimize</b>
+            <span>❀</span>
+
+            <b>Adapt</b>
+            <span>❀</span>
+
+        </div>
+
+    </div>
+
+
+    <!-- MISSION -->
+    <section class="sec mint" id="mission">
+
+        <svg class="fl" style="right:6%;top:60px" width="70" height="70">
+
+            <use href="#fw"></use>
+
+        </svg>
+
+
+        <div class="w">
+
+            <span class="orn rv">
+                ⋆˚꩜｡.ᐟ our mission
+            </span>
+
+
+            <p class="lead rv">
+
+                Waste systems shouldn't wait to fail.
+
+                <em>Flux</em>
+
+                gives campuses a living model of their infrastructure,
+                so every truck, every bin and every mile is a decision
+                made <em>before</em> the overflow, not after it.
+
+            </p>
+
+
+            <div class="grid g3" style="margin-top:56px">
+
+
+                <div class="card rv">
+
+                    <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+
+                        <circle cx="12" cy="12" r="8" />
+
+                        <path d="M12 7v5l3 2" />
+
+                    </svg>
+
+                    <h4>Act early</h4>
+
+                    <p>
+                        Forecast fill levels six hours ahead and respond while
+                        there is still time to choose the gentlest option.
+                    </p>
+
+                </div>
+
+
+                <div class="card rv d1">
+
+                    <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+
+                        <path d="M4 18c0-8 5-13 16-14
+                                 0 10-5 15-14 15" />
+
+                        <path d="M4 20c3-5 6-8 10-10" />
+
+                    </svg>
+
+                    <h4>Waste less effort</h4>
+
+                    <p>
+                        Send a truck only when simulation says it matters.
+                        Fewer miles means fewer emissions.
+                    </p>
+
+                </div>
+
+
+                <div class="card rv d2">
+
+                    <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+
+                        <circle cx="12" cy="8" r="3.5" />
+
+                        <path d="M5 20c1-4 4-6 7-6s6 2 7 6" />
+
+                    </svg>
+
+                    <h4>Keep people in charge</h4>
+
+                    <p>
+                        Flux recommends. A human operator approves,
+                        modifies or rejects every plan.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- PROBLEM -->
+    <section class="sec blush" id="problem">
+
+        <div class="w">
+
+            <div class="grid g2 problem-grid">
+
+                <div class="rv">
+
+                    <span class="orn">
+                        ─ °❀⋆ the problem
+                    </span>
+
+                    <h2>
+                        Fixed routes meet
+                        <em>real life</em>.
+                    </h2>
+
+                    <p class="problem-text">
+
+                        Collection schedules ignore game days,
+                        move-out weekends and festivals.
+
+                        Bins overflow, trucks rush out after the fact,
+                        and every extra mile adds fuel, noise and emissions.
+
+                        Flux replaces "react and dispatch"
+                        with "predict, test and adapt".
+
+                    </p>
+
+                </div>
+
+
+                <div class="card rv d1">
+
+                    <span class="m">
+                        GAME DAY · SIMULATED BIN S-07
+                    </span>
+
+
+                    <div class="fcst">
+
+                        <div>
+
+                            <div class="t">
+                                <span>NOW</span>
+                                <span>46%</span>
+                            </div>
+
+                            <div class="trk">
+                                <i style="--w:32.9%"></i>
+                                <u></u>
+                            </div>
+
+                        </div>
+
+
+                        <div>
+
+                            <div class="t">
+                                <span>FORECAST +6H</span>
+                                <span>120%</span>
+                            </div>
+
+                            <div class="trk">
+
+                                <i class="hi" style="--w:85.7%">
+                                </i>
+
+                                <u></u>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <p class="forecast-text">
+
+                        A bin that looks fine now can overflow by the
+                        second half.
+
+                        Flux keeps
+                        <b>current fill</b>
+                        and
+                        <b>predicted risk</b>
+                        clearly separate.
+
+                        The dashed line marks 100%.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- HOW IT WORKS -->
+    <section class="sec mint" id="how">
+
+        <div class="w">
+
+            <div class="rv">
+
+                <span class="orn">
+                    ⋆˚꩜｡.ᐟ how it works
+                </span>
+
+                <h2>
+                    Four steps,
+                    <em>one loop</em>.
+                </h2>
+
+            </div>
+
+
+            <ul class="steps rv">
+
+                <li>
+
+                    <b>01 · PREDICT</b>
+
+                    <h4>See it coming</h4>
+
+                    <span>
+                        Telemetry and event context become
+                        six-hour fill forecasts for about
+                        36 virtual smart bins.
+                    </span>
+
+                </li>
+
+
+                <li>
+
+                    <b>02 · SIMULATE</b>
+
+                    <h4>Test every response</h4>
+
+                    <span>
+                        Five interventions are simulated side
+                        by side and scored on overflow prevented,
+                        collection effort and environmental impact.
+                    </span>
+
+                </li>
+
+
+                <li>
+
+                    <b>03 · OPTIMIZE</b>
+
+                    <h4>Route only what's needed</h4>
+
+                    <span>
+                        When collection is the right call,
+                        ReRoute plans the truck's path through
+                        the selected stops.
+                    </span>
+
+                </li>
+
+
+                <li>
+
+                    <b>04 · ADAPT</b>
+
+                    <h4>A human decides</h4>
+
+                    <span>
+                        The operator approves, modifies or rejects.
+                        Approval deploys the plan and updates the twin.
+                    </span>
+
+                </li>
+
+            </ul>
+
+
+            <div class="five rv">
+
+                <div>
+                    Do nothing
+                    <small>baseline</small>
+                </div>
+
+                <div>
+                    Targeted collection
+                    <small>specific bins</small>
+                </div>
+
+                <div>
+                    Pre-service
+                    <small>go earlier</small>
+                </div>
+
+                <div>
+                    Add capacity
+                    <small>temporary bins</small>
+                </div>
+
+                <div>
+                    Combined
+                    <small>often the winner</small>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- TOOL -->
+    <section class="sec duo cta" id="tool">
+
+        <div class="w">
+
+            <span class="orn rv">
+                ❀ the digital twin
+            </span>
+
+            <h2 class="rv">
+                Watch a campus
+                <em>adapt</em>.
+            </h2>
+
+            <p class="rv">
+                Run a simulated football game and watch telemetry,
+                forecasts, risks, recommendations and collection
+                routes change in real time.
+            </p>
+
+
+            <a class="btn go rv" href="#" data-tool style="font-size:18px;padding:.8em 1.8em">
+
+                Open the Flux tool →
+
+            </a>
+
+
+            <div class="prev rv">
+
+                <svg viewBox="0 0 760 300" role="img" aria-label="Preview of the Flux map">
+
+                    <rect width="760" height="300" rx="18" fill="var(--m2)" />
+
+
+                    <g stroke="var(--moss)" stroke-opacity=".22" fill="none">
+
+                        <path d="M0 150H760" />
+                        <path d="M0 220H760" />
+                        <path d="M380 90V300" />
+                        <path d="M220 40V150" />
+                        <path d="M540 220V300" />
+
+                    </g>
+
+
+                    <ellipse cx="540" cy="250" rx="60" ry="34" fill="var(--card)" stroke="var(--moss)"
+                        stroke-opacity=".4" />
+
+
+                    <circle cx="540" cy="250" r="82" fill="none" stroke="var(--leaf)" stroke-dasharray="3 5" />
+
+
+                    <path d="M110 240L500 225L560 262L480 270L110 240" fill="none" stroke="#23899a"
+                        stroke-width="2.4" />
+
+
+                    <g fill="var(--leaf)">
+
+                        <circle cx="230" cy="60" r="6" />
+                        <circle cx="270" cy="85" r="6" />
+                        <circle cx="380" cy="150" r="6" />
+                        <circle cx="330" cy="190" r="6" />
+                        <circle cx="640" cy="110" r="6" />
+                        <circle cx="170" cy="120" r="6" />
+
+                    </g>
+
+
+                    <g fill="var(--amber)">
+
+                        <circle cx="500" cy="235" r="6" />
+                        <circle cx="450" cy="170" r="6" />
+
+                    </g>
+
+
+                    <g fill="var(--coral)">
+
+                        <circle cx="530" cy="245" r="6" />
+                        <circle cx="565" cy="262" r="6" />
+                        <circle cx="545" cy="228" r="6" />
+                        <circle cx="510" cy="262" r="6" />
+
+                    </g>
+
+
+                    <rect x="100" y="232" width="16" height="16" rx="4" fill="var(--card)" stroke="var(--moss)" />
+
+
+                    <text x="560" y="294" font-family="DM Mono" font-size="10" fill="var(--sage)">
+
+                        MICHIGAN STADIUM
+
+                    </text>
+
+                </svg>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- IMPACT -->
+    <section class="sec blush" id="impact">
+
+        <div class="w">
+
+            <div class="rv">
+
+                <span class="orn">
+                    ─ °❀⋆ impact
+                </span>
+
+                <h2>
+                    Built to shrink waste's
+                    <em>footprint</em>.
+                </h2>
+
+
+                <div class="chips">
+
+                    <span>SDG 11 · Sustainable cities</span>
+                    <span>SDG 12 · Responsible consumption</span>
+                    <span>SDG 13 · Climate action</span>
+
+                </div>
+
+            </div>
+
+
+            <div class="grid g4">
+
+                <div class="card rv">
+
+                    <span class="big">↓</span>
+
+                    <h4>Overflows</h4>
+
+                    <p>
+                        Less litter, odor and pests during peak events.
+                    </p>
+
+                </div>
+
+
+                <div class="card rv d1">
+
+                    <span class="big">↓</span>
+
+                    <h4>Truck miles</h4>
+
+                    <p>
+                        Only the stops that matter get a route.
+                    </p>
+
+                </div>
+
+
+                <div class="card rv d2">
+
+                    <span class="big">↓</span>
+
+                    <h4>Collections</h4>
+
+                    <p>
+                        Pre-service and temporary capacity
+                        replace extra trips.
+                    </p>
+
+                </div>
+
+
+                <div class="card rv d2">
+
+                    <span class="big">↓</span>
+
+                    <h4>Est. CO₂e</h4>
+
+                    <p>
+                        Measured from simulated miles against
+                        a stated baseline.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="sc rv">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>30 simulated days</th>
+                            <th>Fixed</th>
+                            <th>Reactive</th>
+                            <th class="f">Flux</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        <tr>
+                            <td>Overflow events</td>
+                            <td>41</td>
+                            <td>23</td>
+                            <td class="f">4</td>
+                        </tr>
+
+                        <tr>
+                            <td>Truck miles</td>
+                            <td>612</td>
+                            <td>588</td>
+                            <td class="f">471</td>
+                        </tr>
+
+                        <tr>
+                            <td>Collections</td>
+                            <td>420</td>
+                            <td>388</td>
+                            <td class="f">331</td>
+                        </tr>
+
+                        <tr>
+                            <td>Est. CO₂e (kg)</td>
+                            <td>1,190</td>
+                            <td>1,140</td>
+                            <td class="f">915</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <p class="m" style="margin-top:12px">
+                Placeholder benchmark values until the final run is exported.
+                Synthetic data, not U-M operational data.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- HONEST BY DESIGN -->
+    <section class="sec mint">
+
+        <div class="w">
+
+            <div class="rv">
+
+                <span class="orn">
+                    ⋆˚꩜｡.ᐟ honest by design
+                </span>
+
+                <h2>
+                    Clear about what's
+                    <em>real</em>.
+                </h2>
+
+            </div>
+
+
+            <div class="grid g3">
+
+                <div class="card rv">
+
+                    <span class="m">01</span>
+
+                    <h4>Synthetic data</h4>
+
+                    <p>
+                        The demo uses a simulated network on real
+                        campus geography. It is not U-M operational data.
+                    </p>
+
+                </div>
+
+
+                <div class="card rv d1">
+
+                    <span class="m">02</span>
+
+                    <h4>Estimates, labeled</h4>
+
+                    <p>
+                        CO₂e and savings are estimates,
+                        always shown with their baseline.
+                    </p>
+
+                </div>
+
+
+                <div class="card rv d2">
+
+                    <span class="m">03</span>
+
+                    <h4>Proposed ≠ deployed</h4>
+
+                    <p>
+                        Nothing changes the twin until an operator
+                        approves it.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- TEAM -->
+    <section class="sec blush" id="team">
+
+        <div class="w">
+
+            <div class="rv">
+
+                <span class="orn">
+                    ─ °❀⋆ the team
+                </span>
+
+                <h2>
+                    Built by
+                    <em>students</em>.
+                </h2>
+
+            </div>
+
+
+            <div class="team">
+
+                <div class="card rv">
+
+                    <div class="av">JH</div>
+
+                    <h4>Jayden Huang</h4>
+
+                    <p>
+                        Programmer · Computer Science
+                    </p>
+
+                </div>
+
+
+                <div class="card rv d1">
+
+                    <div class="av">YK</div>
+
+                    <h4>Yorg Kattukaran</h4>
+
+                    <p>
+                        Programmer · Computer Engineering
+                    </p>
+
+                </div>
+
+
+                <div class="card rv d2">
+
+                    <div class="av">VJ</div>
+
+                    <h4>Varun Jagannathan</h4>
+
+                    <p>
+                        Designer · Electrical Engineering
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- FAQ -->
+    <section class="sec mint" id="faq">
+
+        <div class="w faq">
+
+            <div class="rv">
+
+                <span class="orn">
+                    ⋆˚꩜｡.ᐟ
+                </span>
+
+                <h2>
+                    Questions °❀⋆
+                </h2>
+
+            </div>
+
+
+            <div class="rv">
+
+                <div class="q">
+
+                    <button>
+                        Is this real U-M data?
+                        <i>+</i>
+                    </button>
+
+                    <div class="a">
+                        <div>
+                            <p>
+                                No. The network is simulated on real
+                                campus geography with clearly labeled
+                                synthetic waste data.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="q">
+
+                    <button>
+                        Who makes the final call?
+                        <i>+</i>
+                    </button>
+
+                    <div class="a">
+                        <div>
+                            <p>
+                                A human operator. Flux recommends,
+                                and nothing is deployed until it is approved.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="q">
+
+                    <button>
+                        What does "digital twin" mean here?
+                        <i>+</i>
+                    </button>
+
+                    <div class="a">
+                        <div>
+                            <p>
+                                A live virtual model of the waste network:
+                                bins, depot, trucks and campus areas,
+                                which updates as conditions change.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="q">
+
+                    <button>
+                        How is CO₂e estimated?
+                        <i>+</i>
+                    </button>
+
+                    <div class="a">
+                        <div>
+                            <p>
+                                From simulated truck miles and a stated
+                                emissions factor, compared against a
+                                named baseline.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="q">
+
+                    <button>
+                        How does this fit the Sustainability Track?
+                        <i>+</i>
+                    </button>
+
+                    <div class="a">
+                        <div>
+                            <p>
+                                Flux reduces overflow, truck miles and
+                                collections, and reports the estimated
+                                environmental effect of each choice.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- FOOTER -->
+    <footer>
+
+        <div class="w">
+
+            <div>
+
+                <span class="logo">
+                    Flux
+                </span>
+
+                <p class="m">
+                    Infrastructure that adapts.
+                </p>
+
+            </div>
+
+
+            <div>
+
+                <a href="#mission">Mission</a>
+
+                <a href="#how">How it works</a>
+
+                <a href="#impact">Impact</a>
+
+                <a href="#" data-tool>
+                    Open the tool
+                </a>
+
+                <p class="m" style="margin-top:14px">
+                    MHacks 2026 · Sustainability Track ·
+                    Simulated network on campus geography
+                </p>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+
+    <script src="homepage.js"></script>
 
 </body>
 
