@@ -1,0 +1,3 @@
+# The Mac/Linux launcher must keep Unix line endings even when committed from Windows.
+run_demo.sh text eol=lf
+run_demo.bat text eol=crlf

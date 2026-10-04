@@ -1,0 +1,16 @@
+{
+  "01_nearly_empty.jpg": {
+    "is_bin": true,
+    "fill_pct": 10,
+    "confidence": "high",
+    "reason": "The bin contains only a couple of small cups at the very bottom, representing about 10% capacity.",
+    "model": "gemini-3.5-flash-lite"
+  },
+  "02_full.jpg": {
+    "is_bin": true,
+    "fill_pct": 80,
+    "confidence": "high",
+    "reason": "The trash can is filled near the top rim with paper towels.",
+    "model": "gemini-3.5-flash-lite"
+  }
+}
